@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>供应商详细信息</title>
+    {% include 'admin/common/header.html' %}
+</head>
+<body>
+<form class="layui-form" action="">
+    <div class="mainBox">
+        <div class="main-container">
+            <div class="main-container">
+                <div class="layui-form-item layui-hide">
+                    <label class="layui-form-label">编号</label>
+                    <div class="layui-input-block">
+                        <input type="text" value="{{ customer.id }}" name="userId" lay-verify="title"
+                               autocomplete="off" placeholder="请输入标题" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">姓名</label>
+                    <div class="layui-input-block">
+                        <input type="text" value="{{ customer.name }}" name="username" lay-verify="title"
+                               autocomplete="off" placeholder="请输入标题" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">地址</label>
+                    <div class="layui-input-block">
+                        <input type="text" value="{{ customer.legal_address }}" name="realName" lay-verify="title"
+                               autocomplete="off" placeholder="请输入标题"
+                               class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">邮件</label>
+                    <div class="layui-input-block">
+                        <input type="text" value="{{ customer.email_address }}" name="realName" lay-verify="title"
+                               autocomplete="off" placeholder="请输入标题"
+                               class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">联系方式</label>
+                    <div class="layui-input-block">
+                        <input type="text" value="{{ customer.contact_number }}" name="realName" lay-verify="title"
+                               autocomplete="off" placeholder="请输入标题"
+                               class="layui-input">
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-card">
+                            <div class="layui-card-body">
+                                <table id="customer-info-table" lay-filter="customer-info-table"></table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+        <div class="bottom">
+            <div class="button-container">
+                <button type="submit" class="pear-btn pear-btn-primary pear-btn-sm" lay-submit=""
+                        lay-filter="vendor-update">
+                    <i class="layui-icon layui-icon-ok"></i>
+                    确定
+                </button>
+            </div>
+        </div>
+</form>
+{% include 'admin/common/footer.html' %}
+<script>
+    layui.use(['table', 'form', 'jquery', 'element', 'util'], function () {
+        let form = layui.form
+        let $ = layui.jquery
+        let dtree = layui.dtree
+        var table = layui.table;
+        let cols = [
+            [
+                {title: '序列号', field: 'sn', align: 'left' ,width:"250"},
+                {title: 'mac地址', field: 'mac', align: 'left',width:"150"},
+                {title: '创建日期', field: 'create_date', align: 'left',width:"250"},
+            ]
+        ]
+        var sninfo = {{ customer.sninfo|tojson }};
+        table.render({
+            elem: '#customer-info-table',
+            data: sninfo,
+            page: false,
+            count: 50,
+            curr: 2,
+            cols: cols,
+            skin: 'line',
+            overflow: 'tips',
+            text: {none: '暂无SN信息'},
+            defaultToolbar: [{layEvent: 'refresh', icon: 'layui-icon-refresh'}, 'filter', 'print', 'exports'] /*默认工具栏*/
+        })
+
+        form.on('submit(vendor-update)', function (data) {
+            parent.layer.close(parent.layer.getFrameIndex(window.name))//关闭当前页
+
+            return false
+        })
+    })
+</script>
+</body>
+</html>

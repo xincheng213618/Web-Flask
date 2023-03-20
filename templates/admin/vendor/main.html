@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>代理商信息</title>
+    {% include 'admin/common/header.html' %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='admin/admin/css/other/console2.css') }}"/>
+</head>
+
+<body class="pear-container">
+{# 查询表单 #}
+<div class="layui-card">
+    <div class="layui-card-body">
+        <form class="layui-form" action="" lay-filter="plugin-query-form">
+            <div class="layui-form-item">
+                <label class="layui-form-label">代理商信息</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="vendor_name" placeholder="" class="layui-input">
+                </div>
+                <button class="pear-btn pear-btn-md pear-btn-primary" lay-submit lay-filter="vendor-query">
+                    <i class="layui-icon layui-icon-search"></i>
+                    查询
+                </button>
+                <button type="reset" class="pear-btn pear-btn-md">
+                    <i class="layui-icon layui-icon-refresh"></i>
+                    重置
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{# 用户表格 #}
+<div class="user-plugin user-collasped">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <table id="vendor-table" lay-filter="vendor-table"></table>
+        </div>
+    </div>
+</div>
+</body>
+
+
+{# 表格操作 #}
+<script type="text/html" id="vendor-toolbar">
+    {% if authorize("admin:vendor:add") %}
+        <button class="pear-btn pear-btn-primary pear-btn-md" lay-event="add">
+            <i class="pear-icon pear-icon-add"></i>
+            新增
+        </button>
+    {% endif %}
+    {% if authorize("admin:vendor:remove") %}
+        <button class="pear-btn pear-btn-md" lay-event="batchRemove">
+            <i class="pear-icon pear-icon-ashbin"></i>
+            删除
+        </button>
+    {% endif %}
+</script>
+
+{# 用户修改操作 #}
+<script type="text/html" id="vendor-bar">
+    <button class="pear-btn pear-btn-primary pear-btn-sm" lay-event="edit"><i class="pear-icon pear-icon-edit"></i>
+    </button>
+    <button class="pear-btn pear-btn-danger pear-btn-sm" lay-event="remove"><i
+            class="pear-icon pear-icon-ashbin"></i>
+    </button>
+</script>
+
+{# 用户注册时间 #}
+<script type="text/html" id="vendor-createTime">
+    {{ '  {{layui.util.toDateString(d.create_at,  "yyyy-MM-dd HH:mm:ss")}' |safe }}}
+</script>
+
+{# 用户更新时间 #}
+<script type="text/html" id="vendor-updateTime">
+    {{ '  {{layui.util.toDateString(d.update_at,  "yyyy-MM-dd HH:mm:ss")}' |safe }}}
+</script>
+
+{% include 'admin/common/footer.html' %}
+<script>
+    layui.use(['table', 'form', 'jquery', 'element', 'util'], function () {
+        let table = layui.table
+        let form = layui.form
+        let $ = layui.jquery
+        let dtree = layui.dtree
+        let popup = layui.popup
+        let common = layui.common
+
+        let MODULE_PATH = '/vendor/'
+        let cols = [
+            [
+                {% if authorize("admin:vendor:remove") %}
+                    {type: 'checkbox'},
+                {% endif %}
+                {title: 'ID', field: 'id', align: 'center',width:20 ,sort:true},
+                {title: '名称', field: 'name', align: 'center',sort:true },
+                {title: '地址', field: 'address', align: 'center',sort:true},
+                {title: '联系方式', field: 'contact_number', align: 'center',sort:true},
+                {title: '操作', toolbar: '#vendor-bar', align: 'center', width: 130}
+            ]
+        ]
+
+       table.render({
+            elem: '#vendor-table',
+            url: MODULE_PATH + 'data',
+            page: true,
+            count: 50,
+            curr:2,
+            cols: cols,
+            skin: 'line',
+            toolbar: '#vendor-toolbar', /*工具栏*/
+            text: {none: '暂无代理商信息'},
+            defaultToolbar: [{layEvent: 'refresh', icon: 'layui-icon-refresh'}, 'filter', 'print', 'exports'] /*默认工具栏*/
+        })
+        table.on('rowDouble(vendor-table)', function (obj) {
+            {#window.open(MODULE_PATH + 'info/' + obj.data['id'])#}
+            layer.open({
+                type: 2,
+                title: '信息',
+                shade: 0.1,
+                area: ['750px', '600px'],
+                content: MODULE_PATH + 'info/' + obj.data['id'],
+                end: function () {
+                    table.reload('vendor-table')
+                }
+            })
+        });
+
+
+
+        form.on('submit(vendor-query)', function (data) {
+            table.reload('vendor-table', {where: data.field})
+            return false
+        })
+        table.on('tool(vendor-table)', function (obj) {
+            if (obj.event === 'remove') {
+                window.remove(obj)
+            } else if (obj.event === 'edit') {
+                window.edit(obj)
+            }
+        })
+        table.on('toolbar(vendor-table)', function (obj) {
+            if (obj.event === 'add') {
+                window.add()
+            } else if (obj.event === 'refresh') {
+                window.refresh()
+            } else if (obj.event === 'batchRemove') {
+                window.batchRemove()
+            } else if (obj.event === 'collasped') {
+                $('.user-left').toggleClass('user-collasped')
+                $('.user-main').toggleClass('user-collasped')
+                table.resize()
+            }
+        })
+
+
+        window.info = function (obj) {
+            layer.open({
+                type: 2,
+                title: '详细信息',
+                shade: 0,
+                area: ['400px', '400px'],
+                content: MODULE_PATH + 'info',
+                success: function (layero) {
+                    let iframeWin = window[layero.find('iframe')[0]['name']]
+                    iframeWin.show(obj.data)
+                }
+            })
+        }
+        window.add = function () {
+            layer.open({
+                type: 2,
+                title: '新增供应商',
+                shade: 0.1,
+                area: ['550px', '550px'],
+                content: MODULE_PATH + 'add',
+                end: function () {
+                    table.reload('vendor-table')
+                }
+            })
+        }
+        window.edit = function (obj) {
+            layer.open({
+                type: 2,
+                title: '修改',
+                shade: 0.1,
+                area: ['550px', '500px'],
+                content: MODULE_PATH + 'edit/' + obj.data['id'],
+                end: function () {
+                    table.reload('vendor-table')
+                }
+            })
+
+        }
+        window.remove = function (obj) {
+            layer.confirm('确定要删除该用户', {icon: 3, title: '提示'}, function (index) {
+                layer.close(index)
+                let loading = layer.load()
+                $.ajax({
+                    url: MODULE_PATH + 'remove/' + obj.data['id'],
+                    dataType: 'json',
+                    type: 'delete',
+                    success: function (result) {
+                        layer.close(loading)
+                        table.reload('vendor-table')
+                        if (result.success) {
+                            popup.success(result.msg, function () {
+                                obj.del()
+                            })
+                        } else {
+                            popup.failure(result.msg)
+                        }
+
+                    }
+                })
+            })
+        }
+
+        window.batchRemove = function (obj) {
+
+            let data = table.checkStatus(obj.config.id).data
+            if (data.length === 0) {
+                layer.msg('未选中数据', {
+                    icon: 3,
+                    time: 1000
+                })
+                return false
+            }
+            var ids = []
+            var hasCheck = table.checkStatus('user-table')
+            var hasCheckData = hasCheck.data
+            if (hasCheckData.length > 0) {
+                $.each(hasCheckData, function (index, element) {
+                    ids.push(element.id)
+                })
+            }
+            {#console.log(ids);#}
+            layer.confirm('确定要删除选中角色', {
+                icon: 3,
+                title: '提示'
+            }, function (index) {
+                layer.close(index)
+                let loading = layer.load()
+                $.ajax({
+
+                    url: MODULE_PATH + 'batchRemove',
+                    data: {ids: ids},
+                    dataType: 'json',
+                    type: 'delete',
+                    success: function (result) {
+                        layer.close(loading)
+                        if (result.success) {
+                            popup.success(result.msg, function () {
+                                table.reload('vendor-table')
+                            })
+                        } else {
+                            popup.failure(result.msg)
+                        }
+                    }
+                })
+            })
+        }
+        window.refresh = function (param) {
+            table.reload('vendor-table')
+        }
+    })
+
+</script>
+</html>
