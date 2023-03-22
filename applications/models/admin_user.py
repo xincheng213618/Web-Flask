@@ -11,6 +11,7 @@ class User(db.Model, UserMixin):
     realname = db.Column(db.String(20), comment='真实名字')
     avatar = db.Column(db.String(255), comment='头像', default="/static/admin/admin/images/avatar.jpg")
     remark = db.Column(db.String(255), comment='备注')
+    email = db.Column(db.String(255), comment='邮件')
     password_hash = db.Column(db.String(128), comment='哈希密码')
     enable = db.Column(db.Integer, default=0, comment='启用')
     dept_id = db.Column(db.Integer, comment='部门id')

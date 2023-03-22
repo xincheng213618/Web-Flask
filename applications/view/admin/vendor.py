@@ -12,10 +12,9 @@ def main():
 def add():
     return render_template('admin/vendor/add.html')
 
-
-
 import pymysql
 from util.sql import *
+
 @vendor.get('/data')
 def data():
     page = request.args.get('page', type=int)

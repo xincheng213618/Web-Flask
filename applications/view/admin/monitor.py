@@ -13,7 +13,6 @@ admin_monitor_bp = Blueprint('adminMonitor', __name__, url_prefix='/admin/monito
 
 # 系统监控
 @admin_monitor_bp.get('/')
-@authorize("admin:monitor:main")
 def main():
     # 主机名称
     hostname = platform.node()
@@ -78,7 +77,6 @@ def main():
 
 # 图表 api
 @admin_monitor_bp.get('/polling')
-@authorize("admin:monitor:main")
 def ajax_polling():
     # 获取cpu使用率
     cpus_percent = psutil.cpu_percent(interval=0.1, percpu=False)  # percpu 获取主使用率

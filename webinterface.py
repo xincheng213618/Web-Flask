@@ -1,9 +1,7 @@
-from main import *
+from main import app
 from flask import render_template,request,jsonify,redirect
 import pymysql
-@app.route('/', methods=['get'])
-def root():
-    return redirect("/admin", code=302)
+
 
 @app.route('/generateSNCode', methods=['get'])
 def generateSNCode():
@@ -77,45 +75,6 @@ def orderadd1(user_id,serial_id,payment,effect_date,expire_date):
     except Exception as e:
         return returnMsg(e.args)
 
-
-
-@app.route('/upload', methods=['get'])
-def upload():
-    return render_template("upload.html")
-
-import os
-@app.route('/uploader', methods=['GET', 'POST'])
-def uploader():
-    if request.method == 'POST':
-        f = request.files['file']
-        print(request.files)
-        f.save(f.filename)
-        return 'file uploaded successfully'
-
-    else:
-        return render_template('upload.html')
-
-@app.route('/manager', methods=['get'])
-def manager():
-    return render_template("manager.html")
-
-
-@app.route('/getRegion', methods=['get'])
-def GetRegion():
-    db = pymysql.connect(host=HOST, user=USER, passwd=PASSWD, db=DB, charset=CHARSET, port=PORT,
-                         use_unicode=True)
-    cursor = db.cursor()
-    sql = "SELECT `name` FROM `grid`.`vendor`"
-    num = cursor.execute(sql)
-    vendor = cursor.fetchall()
-    vendorlist = []
-    for row in vendor:
-        vendorlist.append(row[0]);
-
-    print(vendorlist)
-
-    resu = {'state': 0, 'message': '', 'list': vendorlist}
-    return jsonify(resu)
 
 import uuid
 import  util.redistaic

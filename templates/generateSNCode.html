@@ -161,8 +161,7 @@
                 <form class="form-horizontal">
                     <span class="heading">生成序列号</span>
                     <div class="form-group">
-                        <input class="form-control" id="inputPassword1" list="browsers" autocomplete="on"
-                               placeholder="分销商名称">
+                        <input class="form-control" id="inputPassword1" list="browsers" autocomplete="on" placeholder="代理商名称">
                         <datalist id="browsers">
                         </datalist>
                         <i class="fa fa-lock"></i>
@@ -208,27 +207,29 @@
     window.onload = function () {
         var datalist = document.getElementById("browsers");
         console.log(datalist)
-        getRegionurl = "/getRegion"
-        axios.get(getRegionurl)
-            .then(function (response) {
-                for (var o in response.data.list) {
-                    var option = document.createElement("option");
-                    option.text = response.data.list[o]
-                    console.log(option)
-                    datalist.appendChild(option);
-                }
-            })
+        getRegionurl = "vendor/data"
+        axios.get(getRegionurl,{
+            params: {
+                page: 1,
+                limit: '10',
+            }}).then(function (response) {
+            for (var o in response.data.data) {
+                var option = document.createElement("option");
+                option.text = response.data.data[o].name
+                datalist.appendChild(option);
+            }
+        })
 
-        moudlelist = document.getElementById("moudlelist");
-        getModuleUrl = "/getModule"
-        axios.get(getModuleUrl)
-            .then(function (response) {
-                for (var o in response.data.list) {
-                    var option = document.createElement("option");
-                    option.text = response.data.list[o]
-                    moudlelist.appendChild(option);
-                }
-            })
+        {#moudlelist = document.getElementById("moudlelist");#}
+        {#getModuleUrl = "/getModule"#}
+        {#axios.get(getModuleUrl)#}
+        {#    .then(function (response) {#}
+        {#        for (var o in response.data.list) {#}
+        {#            var option = document.createElement("option");#}
+        {#            option.text = response.data.list[o]#}
+        {#            moudlelist.appendChild(option);#}
+        {#        }#}
+        {#    })#}
     }
     new Vue({
         el: '#moudleSelect',

@@ -4,7 +4,7 @@ from sqlalchemy import desc
 
 from applications.common import curd
 from applications.common.curd import enable_status, disable_status
-from applications.common.utils.http import table_api, fail_api, success_api
+from applications.common    .utils.http import table_api, fail_api, success_api
 from applications.common.utils.rights import authorize
 from applications.common.utils.validate import str_escape
 from applications.extensions import db
@@ -139,6 +139,7 @@ def update():
     return success_api(msg="更新成功")
 
 
+
 # 个人中心
 @admin_user.get('/center')
 @login_required
@@ -174,7 +175,7 @@ def update_avatar():
 def update_info():
     req_json = request.json
     r = User.query.filter_by(id=current_user.id).update(
-        {"realname": req_json.get("realName"), "remark": req_json.get("details")})
+        {"realname": req_json.get("realName"), "remark": req_json.get("details"),"email":req_json.get("email")})
     db.session.commit()
     if not r:
         return fail_api(msg="出错啦")

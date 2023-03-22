@@ -16,13 +16,13 @@ receivers = ['1791746286@qq.com']
 
 def sendmail(subject,content):
     # 第三方 SMTP 服务
-    message =MIMEMultipart()
-    message['From'] = mail_user
-    # message['To'] = "xincheng213618@gmail.com'"
-    message['To'] =receivers[0]
-    message['Subject'] = Header(subject, 'utf-8')
-    part1 = MIMEText(content, 'plain', 'utf-8')
-    message.attach(part1)
+    # content = content.encode("ascii", errors="ignore")
+    email =MIMEMultipart()
+    email['From'] = mail_user
+    email['To'] = receivers[0]
+    email['Subject'] = Header(subject, 'utf-8')
+    message = MIMEText(content, 'plain', 'utf-8')
+    email.attach(message)
 
     # addfile(message,filename)
     # addfile(message,"demo.py")
@@ -30,10 +30,9 @@ def sendmail(subject,content):
     try:
         s = smtplib.SMTP_SSL(mail_host, 465)
         s.login(mail_user, mail_pass)
-        s.sendmail(mail_user, receivers, message.as_string())
+        s.sendmail(mail_user, receivers, email.as_string())
         print("邮件发送成功")
         return 0,"邮件发送成功"
-
     except smtplib.SMTPDataError as e :
         return -1,e.args
 

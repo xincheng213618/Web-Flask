@@ -113,49 +113,53 @@
                 </ul>
             </div>
         </div>
-        <div class="layui-card">
-            <div class="layui-card-header">主机信息</div>
-            <div class="layui-card-body">
-                <table class="layui-table" lay-skin="line">
-                    <thead>
-                    <tr>
-                        <th>属性</th>
-                        <th>值</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <td>名称</td>
-                        <td>{{ hostname }}</td>
-                    </tr>
+        {% if authorize("admin:monitor:main") %}
+            <div class="layui-card">
+                <div class="layui-card-header">主机信息</div>
+                <div class="layui-card-body">
+                    <table class="layui-table" lay-skin="line">
+                        <thead>
+                        <tr>
+                            <th>属性</th>
+                            <th>值</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>名称</td>
+                            <td>{{ hostname }}</td>
+                        </tr>
 
-                    <tr>
-                        <td>系统</td>
-                        <td>{{ system_version }}</td>
-                    </tr>
-                    <tr>
-                        <td>开机时间</td>
-                        <td>{{ boot_time }}</td>
-                    </tr>
-                    <tr>
-                        <td>运行时长</td>
-                        <td>{{ up_time_format }}</td>
-                    </tr>
-                    <tr>
-                        <td>python版本</td>
-                        <td>{{ python_version }}</td>
-                    </tr>
-                    <tr>
-                        <td>程序操作</td>
-                        <td>
-                            <a href="javascript:kill();"
-                               class="pear-btn pear-btn-xs pear-btn-primary">关闭程序</a>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
+                        <tr>
+                            <td>系统</td>
+                            <td>{{ system_version }}</td>
+                        </tr>
+                        <tr>
+                            <td>开机时间</td>
+                            <td>{{ boot_time }}</td>
+                        </tr>
+                        <tr>
+                            <td>运行时长</td>
+                            <td>{{ up_time_format }}</td>
+                        </tr>
+                        <tr>
+                            <td>python版本</td>
+                            <td>{{ python_version }}</td>
+                        </tr>
+                        <tr>
+                            <td>程序操作</td>
+                            <td>
+                                <a href="javascript:kill();"
+                                   class="pear-btn pear-btn-xs pear-btn-primary">关闭程序</a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
-        </div>
+        {% endif %}
+
+
     </div>
 </div>
 {% include 'admin/common/footer.html' %}

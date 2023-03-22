@@ -10,7 +10,6 @@ CHARSET = 'utf8'
 # 创建一个服务，把当前这个python文件当做一个服务
 app = flask.Flask(__name__)
 
-
 @app.route('/Userlogin', methods=['post'])
 def Userlogin():
     name = request.values.get('name')
@@ -39,7 +38,6 @@ def Userlogin():
         sql = "SELECT * FROM  `user` WHERE `name` = '%s'" % (name);
         cursor.execute(sql)
         return {'state': 0, 'message': '', 'userid': cursor.fetchall()[0][0]};
-
 
 @app.route('/register', methods=['post'])
 def register():
@@ -260,9 +258,6 @@ def checkMac(mac):
     return False
 
 
-
-
-
 @app.route('/generateSNCode', methods=['post'])
 def generateSNCodepost():
     sn = request.values.get('sn')
@@ -280,8 +275,6 @@ def generateSNCodepost():
 
     resu = {'state': 0, 'message': '序列号添加成功'}
     return jsonify(resu)
-
-
 
 @app.route('/checkregister', methods=['post'])
 def checkregister():
@@ -365,6 +358,10 @@ def checkregisterdata():
         resu = {'state': 1, 'message': "数据库连接失败"}
     return jsonify(resu)  # 将字典转换为json串, json是字符串
 
+from flask import Flask, render_template, request, redirect
+@app.route('/', methods=['get'])
+def root():
+    return redirect("/admin", code=302)
 
 from applications import create_app
 from webinterface import *

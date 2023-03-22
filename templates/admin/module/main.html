@@ -111,21 +111,6 @@
             text: {none: '暂无代理商信息'},
             defaultToolbar: [{layEvent: 'refresh', icon: 'layui-icon-refresh'}, 'filter', 'print', 'exports'] /*默认工具栏*/
         })
-        table.on('rowDouble(module-table)', function (obj) {
-            {#window.open(MODULE_PATH + 'info/' + obj.data['id'])#}
-            layer.open({
-                type: 2,
-                title: '信息',
-                shade: 0.1,
-                area: ['750px', '600px'],
-                content: MODULE_PATH + 'info/' + obj.data['id'],
-                end: function () {
-                    table.reload('module-table')
-                }
-            })
-        });
-
-
 
         form.on('submit(module-query)', function (data) {
             table.reload('module-table', {where: data.field})
