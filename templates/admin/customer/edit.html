@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>供应商编辑</title>
+    <title>客户编辑</title>
     {% include 'admin/common/header.html' %}
 </head>
 <body>
@@ -20,14 +20,14 @@
                 <div class="layui-form-item">
                     <label class="layui-form-label">姓名</label>
                     <div class="layui-input-block">
-                        <input type="text" value="{{ customer.name }}" name="username" lay-verify="title"
+                        <input type="text" value="{{ customer.name }}" name="name" lay-verify="title"
                                autocomplete="off" placeholder="请输入标题" class="layui-input">
                     </div>
                 </div>
                 <div class="layui-form-item">
                     <label class="layui-form-label">地址</label>
                     <div class="layui-input-block">
-                        <input type="text" value="{{ customer.legal_address }}" name="realName" lay-verify="title"
+                        <input type="text" value="{{ customer.legal_address }}" name="legal_address" lay-verify="title"
                                autocomplete="off" placeholder="请输入标题"
                                class="layui-input">
                     </div>
@@ -35,7 +35,7 @@
                                 <div class="layui-form-item">
                     <label class="layui-form-label">邮件</label>
                     <div class="layui-input-block">
-                        <input type="text" value="{{ customer.email_address }}" name="realName" lay-verify="title"
+                        <input type="text" value="{{ customer.email_address }}" name="email_address" lay-verify="title"
                                autocomplete="off" placeholder="请输入标题"
                                class="layui-input">
                     </div>
@@ -43,7 +43,7 @@
                                 <div class="layui-form-item">
                     <label class="layui-form-label">联系方式</label>
                     <div class="layui-input-block">
-                        <input type="text" value="{{ customer.contact_number }}" name="realName" lay-verify="title"
+                        <input type="text" value="{{ customer.contact_number }}" name="contact_number" lay-verify="title"
                                autocomplete="off" placeholder="请输入标题"
                                class="layui-input">
                     </div>

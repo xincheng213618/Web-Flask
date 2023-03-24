@@ -12,9 +12,21 @@
     <div class="layui-card-body">
         <form class="layui-form" action="" lay-filter="plugin-query-form">
             <div class="layui-form-item">
-                <label class="layui-form-label">客户管理</label>
+                <label class="layui-form-label">客户名称</label>
                 <div class="layui-input-inline">
                     <input type="text" name="customer_name" placeholder="" class="layui-input">
+                </div>
+                <label class="layui-form-label">地址</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="legal_address" placeholder="" class="layui-input">
+                </div>
+                <label class="layui-form-label">电话</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="contact_number" placeholder="" class="layui-input">
+                </div>
+                <label class="layui-form-label">邮件</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="email_address" placeholder="" class="layui-input">
                 </div>
                 <button class="pear-btn pear-btn-md pear-btn-primary" lay-submit lay-filter="customer-query">
                     <i class="layui-icon layui-icon-search"></i>
@@ -90,22 +102,22 @@
                 {% if authorize("admin:customer:remove") %}
                     {type: 'checkbox'},
                 {% endif %}
-                {title: 'ID', field: 'id', align: 'center',width:20,sort:true},
-                {title: '名称', field: 'name', align: 'center',sort:true },
-                {title: '注册地址', field: 'legal_address', align: 'center',sort:true},
-                {title: '注册邮件地址 ', field: 'email_address', align: 'center',sort:true},
-                 {title: '注册邮件地址 ', field: 'contact_number', align: 'center',sort:true},
-                {title: 'VIP ', field: 'user_class', align: 'center',width:160,sort:true},
+                {title: 'ID', field: 'id', align: 'center', width: 20, sort: true},
+                {title: '名称', field: 'name', align: 'center', sort: true},
+                {title: '地址', field: 'legal_address', align: 'center', sort: true},
+                {title: '邮件 ', field: 'email_address', align: 'center', sort: true},
+                {title: '手机 ', field: 'contact_number', align: 'center', sort: true},
+                {title: 'VIP ', field: 'user_class', align: 'center', width: 160, sort: true},
                 {title: '操作', toolbar: '#customer-bar', align: 'center', width: 130}
             ]
         ]
 
-       table.render({
+        table.render({
             elem: '#customer-table',
             url: MODULE_PATH + 'data',
             page: true,
             count: 50,
-            curr:2,
+            curr: 2,
             cols: cols,
             skin: 'line',
             toolbar: '#customer-toolbar', /*工具栏*/
@@ -113,7 +125,7 @@
             defaultToolbar: [{layEvent: 'refresh', icon: 'layui-icon-refresh'}, 'filter', 'print', 'exports'] /*默认工具栏*/
 
         })
-            table.on('rowDouble(customer-table)', function (obj) {
+        table.on('rowDouble(customer-table)', function (obj) {
             {#window.open(MODULE_PATH + 'info/' + obj.data['id'])#}
             layer.open({
                 type: 2,
@@ -185,7 +197,7 @@
         window.add = function () {
             layer.open({
                 type: 2,
-                title: '新增供应商',
+                title: '新增客户',
                 shade: 0.1,
                 area: ['550px', '550px'],
                 content: MODULE_PATH + 'add',
@@ -232,8 +244,7 @@
         }
 
         window.batchRemove = function (obj) {
-
-            let data = table.checkStatus(obj.config.id).data
+            let data = table.checkStatus('customer-table').data
             if (data.length === 0) {
                 layer.msg('未选中数据', {
                     icon: 3,
@@ -242,14 +253,14 @@
                 return false
             }
             var ids = []
-            var hasCheck = table.checkStatus('user-table')
+            var hasCheck = table.checkStatus('customer-table')
             var hasCheckData = hasCheck.data
             if (hasCheckData.length > 0) {
                 $.each(hasCheckData, function (index, element) {
                     ids.push(element.id)
                 })
             }
-            {#console.log(ids);#}
+            console.log(ids);
             layer.confirm('确定要删除选中角色', {
                 icon: 3,
                 title: '提示'
@@ -265,8 +276,8 @@
                     success: function (result) {
                         layer.close(loading)
                         if (result.success) {
+                            table.reload('customer-table')
                             popup.success(result.msg, function () {
-                                table.reload('customer-table')
                             })
                         } else {
                             popup.failure(result.msg)

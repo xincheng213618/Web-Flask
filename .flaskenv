@@ -12,7 +12,7 @@ SYSTEM_NAME = Grid后台管理系统
 MYSQL_HOST = xc213618.ddns.me
 # MYSQL_HOST = dbserver
 MYSQL_PORT = 3306
-MYSQL_DATABASE = PearAdminFlask
+MYSQL_DATABASE = grid
 MYSQL_USERNAME = root
 MYSQL_PASSWORD = xincheng
 

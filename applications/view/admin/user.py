@@ -4,7 +4,7 @@ from sqlalchemy import desc
 
 from applications.common import curd
 from applications.common.curd import enable_status, disable_status
-from applications.common    .utils.http import table_api, fail_api, success_api
+from applications.common.utils.http import table_api, fail_api, success_api
 from applications.common.utils.rights import authorize
 from applications.common.utils.validate import str_escape
 from applications.extensions import db

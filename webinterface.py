@@ -1,4 +1,4 @@
-from main import app
+from main import *
 from flask import render_template,request,jsonify,redirect
 import pymysql
 
@@ -12,7 +12,7 @@ def orderadd():
     if request.method == 'GET':
         return render_template("orderadd.html")
     elif request.method == "POST":
-        vendor = request.values.get("vendor")
+        serial = request.values.get("vendor")
         moudle = request.values.get("moudle")
         payment = request.values.get("payment")
         effectdate = request.values.get("effectdate")

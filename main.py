@@ -1,5 +1,7 @@
 import flask
-
+from flask import Blueprint, request, render_template,jsonify,escape
+import re,pymysql
+import time
 HOST = 'xc213618.ddns.me'
 USER = 'root'
 PASSWD = 'xincheng'
@@ -321,7 +323,8 @@ def checkregister():
                     return jsonify(resu)  # 将字典转换为json串, json是字符串
         resu = {'state': 1, 'message': '当前序列号已注册到其他机器'}
         db.commit()
-    except Exception:
+    except Exception as e:
+        print(e.args)
         resu = {'state': 1, 'message': "数据库连接失败"}
     return jsonify(resu)  # 将字典转换为json串, json是字符串
 

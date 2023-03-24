@@ -14,6 +14,7 @@ from applications.view.admin.customer import customer
 from applications.view.admin.vendor import vendor
 from applications.view.admin.order import order
 from applications.view.admin.module import module
+from applications.view.admin.serial import serial
 
 
 def register_admin_views(app: Flask):
@@ -31,4 +32,5 @@ def register_admin_views(app: Flask):
     app.register_blueprint(vendor)
     app.register_blueprint(order)
     app.register_blueprint(module)
+    app.register_blueprint(serial)
 

@@ -3,10 +3,7 @@ from flask_login import current_user,login_required
 from main import *
 from applications import create_app
 
-from util import smtp
 
-
-from flask_apscheduler import APScheduler
 from util import smtp
 def send(email):
     receivers = email
@@ -18,7 +15,7 @@ def send(email):
     code, msg = smtp.sendmail(headers,content)
 
 if __name__ == '__main__':
+    app.config['MAX_CONTENT_LENGTH'] = 160 * 1000 * 1000
     create_app(app)
-
     app.run(debug=True, port=18888, host='0.0.0.0');
 

@@ -44,12 +44,7 @@ def data():
         vendor['address'] =i[2]
         vendor['contact_number'] =i[3]
         data.append(vendor)
-
-    sql ="SELECT COUNT(*) FROM `grid`.`vendor`"
-    cursor.execute(sql)
-    count =cursor.fetchall()
-
-    resu = {'code': 0, 'message': '', 'data': data, 'count': count[0][0], 'limit': limit}
+    resu = {'code': 0, 'message': '', 'data': data, 'count': aa, 'limit': limit}
     return jsonify(resu);
 
 def str_escape(s):
