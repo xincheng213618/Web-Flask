@@ -1,6 +1,6 @@
 import flask
 from flask import Blueprint, request, render_template,jsonify,escape
-import re,pymysql
+import re,pymysql,json
 import time
 HOST = 'xc213618.ddns.me'
 USER = 'root'
@@ -63,17 +63,29 @@ def register():
     mac_address = mac_address.strip().replace("-", "").replace(":", "").replace(".", "")
 
     if register_info:
+        register_info = json.loads(register_info)
+        name = register_info["name"]
+        if not name:
+            resu = {'state': 1, 'message': '用户名为空'}
+            return jsonify(resu)
+        legal_address = register_info["legal_address"]
+        if not legal_address:
+            resu = {'state': 1, 'message': '注册地址为空'}
+            return jsonify(resu)
+        email_address = register_info["email_address"]
+        if not email_address:
+            resu = {'state': 1, 'message': '注册邮件地址为空'}
+            return jsonify(resu)
+        contact_number = register_info["contact_number"]
+        if not email_address:
+            resu = {'state': 1, 'message': '联系电话为空'}
+            return jsonify(resu)
         try:
             db = pymysql.connect(host=HOST, user=USER, passwd=PASSWD, db=DB, charset=CHARSET, port=PORT,
                                  use_unicode=True)
             cursor = db.cursor()
 
             try:
-                register_info = json.loads(register_info)
-                name = register_info["name"]
-                legal_address = register_info["legal_address"]
-                email_address = register_info["email_address"]
-                contact_number = register_info["contact_number"]
                 sql = "SELECT * FROM  `user` WHERE `name` = '%s'" % (name);
                 num = cursor.execute(sql)
                 result = cursor.fetchall();
@@ -132,21 +144,6 @@ def register():
 
             resu = {'state': 0, 'message': "注册成功", 'user-class': 0, 'feature-list': [{"Moudlue": "基础版本"}]}
             return jsonify(resu)  # 将字典转换为json串, json是字符串
-
-            # if (num==0):
-            #     create_date = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-            #     sql = "INSERT INTO `register-info` (user_id, equip_identify, mac_address, sn,create_date) \
-            #            VALUES (%s, '%s', '%s','%s','%s')" % \
-            #           (user_id, equip_identify, mac_address, sn, create_date)
-            #     print(sql)
-            #     aa = cursor.execute(sql)
-            #     db.commit()
-            #
-            #     resu = {'state': 0, 'message': "注册成功", 'user-class': "0", 'feature-list': "22"}
-            #     return jsonify(resu)   # 将字典转换为json串, json是字符串
-            # else:
-            #     resu = {'state': 1, 'message': "该机器已经注册"}
-            #     return jsonify(resu)   # 将字典转换为json串, json是字符串
         except Exception as e:
             resu = {'state': 1, 'message': e.args}
             return jsonify(resu)  # 将字典转换为json串, json是字符串
@@ -156,7 +153,6 @@ def register():
         return jsonify(resu)
 
 def returnMsg(Msg=""):
-
     if not Msg or Msg == "":
         return jsonify({'state': 0, 'message': ''})
     Msg =str(Msg)

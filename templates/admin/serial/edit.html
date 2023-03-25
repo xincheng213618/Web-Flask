@@ -13,29 +13,29 @@
                 <div class="layui-form-item layui-hide">
                     <label class="layui-form-label">编号</label>
                     <div class="layui-input-block">
-                        <input type="text" value="{{ vendor.id }}" name="userId" lay-verify="title"
+                        <input type="text" value="{{ serial.id }}" name="userId" lay-verify="title"
                                autocomplete="off" placeholder="请输入标题" class="layui-input">
                     </div>
                 </div>
                 <div class="layui-form-item">
-                    <label class="layui-form-label">姓名</label>
+                    <label class="layui-form-label">SN</label>
                     <div class="layui-input-block">
-                        <input type="text" value="{{ vendor.name }}" name="username" lay-verify="title"
+                        <input type="text" value="{{ serial.sn }}" name="username" lay-verify="title"
                                autocomplete="off" placeholder="请输入姓名" class="layui-input">
                     </div>
                 </div>
                 <div class="layui-form-item">
-                    <label class="layui-form-label">公司地址</label>
+                    <label class="layui-form-label">模块</label>
                     <div class="layui-input-block">
-                        <input type="text" value="{{ vendor.address }}" name="realName" lay-verify="title"
+                        <input type="text" value="{{ serial.module_id }}" name="realName" lay-verify="title"
                                autocomplete="off" placeholder="请输入地址"
                                class="layui-input">
                     </div>
                 </div>
                 <div class="layui-form-item">
-                    <label class="layui-form-label">联系方式</label>
+                    <label class="layui-form-label">模块</label>
                     <div class="layui-input-block">
-                        <input type="text" value="{{ vendor.contact_number }}" name="realName" lay-verify="title"
+                        <input type="text" value="{{ serial.vendor_id }}" name="realName" lay-verify="title"
                                autocomplete="off" placeholder="请输入联系方式"
                                class="layui-input">
                     </div>

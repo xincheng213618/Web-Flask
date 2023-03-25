@@ -12,9 +12,17 @@
     <div class="layui-card-body">
         <form class="layui-form" action="" lay-filter="plugin-query-form">
             <div class="layui-form-item">
-                <label class="layui-form-label">模块管理</label>
+                <label class="layui-form-label">模块名</label>
                 <div class="layui-input-inline">
                     <input type="text" name="module_name" placeholder="" class="layui-input">
+                </div>
+                <label class="layui-form-label">模块文件名</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="code" placeholder="" class="layui-input">
+                </div>
+                <label class="layui-form-label">付费模式</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="code" placeholder="" class="layui-input">
                 </div>
                 <button class="pear-btn pear-btn-md pear-btn-primary" lay-submit lay-filter="module-query">
                     <i class="layui-icon layui-icon-search"></i>
@@ -57,11 +65,14 @@
 
 {# 用户修改操作 #}
 <script type="text/html" id="module-bar">
-    <button class="pear-btn pear-btn-primary pear-btn-sm" lay-event="edit"><i class="pear-icon pear-icon-edit"></i>
-    </button>
-    <button class="pear-btn pear-btn-danger pear-btn-sm" lay-event="remove"><i
-            class="pear-icon pear-icon-ashbin"></i>
-    </button>
+    {% if authorize("admin:module:edit") %}
+        <button class="pear-btn pear-btn-primary pear-btn-sm" lay-event="edit"><i class="pear-icon pear-icon-edit"></i>
+        </button>
+        <button class="pear-btn pear-btn-danger pear-btn-sm" lay-event="remove"><i
+                class="pear-icon pear-icon-ashbin"></i>
+        </button>
+    {% endif %}
+
 </script>
 
 {# 用户注册时间 #}
@@ -90,25 +101,28 @@
                 {% if authorize("admin:module:remove") %}
                     {type: 'checkbox'},
                 {% endif %}
-                {title: 'ID', field: 'id', align: 'center',width:20 ,sort:true},
-                {title: '模块名', field: 'name', align: 'center',sort:true },
-                {title: '模块文件名', field: 'code', align: 'center',sort:true},
-                {title: '下载地址', field: 'download_address', align: 'center',sort:true},
+                {title: 'ID', field: 'id', align: 'center', width: 20, sort: true},
+                {title: '模块名', field: 'name', align: 'center', sort: true},
+                {title: '模块文件名', field: 'code', align: 'center', sort: true},
+                {title: '下载地址', field: 'download_address', align: 'center', sort: true},
                 {title: '续费模式', field: 'renewal_type', align: 'center'},
-                {title: '操作', toolbar: '#module-bar', align: 'center', width: 130}
+                {% if authorize("admin:module:edit") %}
+                    {title: '操作', toolbar: '#module-bar', align: 'center', width: 130}
+                {% endif %}
+
             ]
         ]
 
-       table.render({
+        table.render({
             elem: '#module-table',
             url: MODULE_PATH + 'data',
             page: true,
             count: 50,
-            curr:2,
+            curr: 2,
             cols: cols,
             skin: 'line',
             toolbar: '#module-toolbar', /*工具栏*/
-            text: {none: '暂无代理商信息'},
+            text: {none: '暂无模块信息'},
             defaultToolbar: [{layEvent: 'refresh', icon: 'layui-icon-refresh'}, 'filter', 'print', 'exports'] /*默认工具栏*/
         })
 
@@ -202,7 +216,7 @@
 
         window.batchRemove = function (obj) {
 
-            let data = table.checkStatus(obj.config.id).data
+            let data = table.checkStatus('module-table').data
             if (data.length === 0) {
                 layer.msg('未选中数据', {
                     icon: 3,
@@ -211,7 +225,7 @@
                 return false
             }
             var ids = []
-            var hasCheck = table.checkStatus('user-table')
+            var hasCheck = table.checkStatus('module-table')
             var hasCheckData = hasCheck.data
             if (hasCheckData.length > 0) {
                 $.each(hasCheckData, function (index, element) {
@@ -234,9 +248,7 @@
                     success: function (result) {
                         layer.close(loading)
                         if (result.success) {
-                            popup.success(result.msg, function () {
-                                table.reload('module-table')
-                            })
+                            table.reload('module-table')
                         } else {
                             popup.failure(result.msg)
                         }

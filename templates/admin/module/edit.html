@@ -18,24 +18,33 @@
                     </div>
                 </div>
                 <div class="layui-form-item">
-                    <label class="layui-form-label">姓名</label>
+                    <label class="layui-form-label">模块名</label>
                     <div class="layui-input-block">
-                        <input type="text" value="{{ module.name }}" name="username" lay-verify="title"
+                        <input type="text" value="{{ module.name }}" name="name" lay-verify="title"
                                autocomplete="off" placeholder="请输入姓名" class="layui-input">
                     </div>
                 </div>
                 <div class="layui-form-item">
-                    <label class="layui-form-label">公司地址</label>
+                    <label class="layui-form-label">模块文件名</label>
                     <div class="layui-input-block">
-                        <input type="text" value="{{ module.address }}" name="realName" lay-verify="title"
+                        <input type="text" value="{{ module.code }}" name="code" lay-verify="title"
                                autocomplete="off" placeholder="请输入地址"
                                class="layui-input">
                     </div>
                 </div>
                 <div class="layui-form-item">
-                    <label class="layui-form-label">联系方式</label>
+                    <label class="layui-form-label">下载地址</label>
                     <div class="layui-input-block">
-                        <input type="text" value="{{ module.contact_number }}" name="realName" lay-verify="title"
+                        <input type="text" value="{{ module.download_address }}" name="download_address"
+                               lay-verify="title"
+                               autocomplete="off" placeholder="请输入联系方式"
+                               class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">续费模式</label>
+                    <div class="layui-input-block">
+                        <input type="text" value="{{ module.renewal_type }}" name="renewal_type" lay-verify="title"
                                autocomplete="off" placeholder="请输入联系方式"
                                class="layui-input">
                     </div>

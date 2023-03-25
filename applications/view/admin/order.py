@@ -1,21 +1,33 @@
 from flask import Blueprint, request, render_template,jsonify,escape
 
 
+from applications.models import GridUser,RegisterInfo
+from flask import Blueprint, render_template, request, current_app
+from flask_login import current_user
+from flask_mail import Message
+from applications.common.curd import model_to_dicts
+from applications.common.helper import ModelFilter
+from applications.common.utils.http import table_api, fail_api, success_api
+from applications.common.utils.rights import authorize
+from applications.common.utils.validate import str_escape
+from applications.extensions import db, flask_mail
+from applications.models import Mail
+from applications.schemas import GridUserOutSchema,RegisterInfoOutSchema
+from applications.common import curd
 order = Blueprint('order', __name__, url_prefix='/order')
 
 # 订单管理
 @order.get('/')
-
+@authorize("admin:order:main")
 def main():
     return render_template('admin/order/main.html')
 # 用户增加
-@order.get('/add')
-def add():
-    return render_template('admin/order/add.html')
+
 
 import pymysql
 from util.sql import *
 @order.get('/data')
+@authorize("admin:order:main")
 def data():
     page = request.args.get('page', type=int)
     limit = request.args.get('limit', type=int)
@@ -56,6 +68,10 @@ def str_escape(s):
     if not s:
         return None
     return str(escape(s))
+
+@order.get('/add')
+def add():
+    return render_template('admin/order/add.html')
 @order.post('/save')
 def save():
     req_json = request.json

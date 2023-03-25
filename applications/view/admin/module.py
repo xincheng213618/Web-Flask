@@ -1,149 +1,131 @@
-from flask import Blueprint, request, render_template,jsonify,escape
-
+from flask import Blueprint, request, render_template,jsonify
+from applications.models import Gridmodule,RegisterInfo
+from flask import Blueprint, render_template, request, current_app
+from flask_login import current_user
+from flask_mail import Message
+from applications.common.curd import model_to_dicts
+from applications.common.helper import ModelFilter
+from applications.common.utils.http import table_api, fail_api, success_api
+from applications.common.utils.rights import authorize
+from applications.common.utils.validate import str_escape
+from applications.extensions import db, flask_mail
+from applications.models import Mail
+from applications.schemas import GridUserOutSchema,RegisterInfoOutSchema
+from applications.common import curd
 
 module = Blueprint('module', __name__, url_prefix='/module')
 
 # 用户管理
 @module.get('/')
+@authorize("admin:module:main")
 def main():
     return render_template('admin/module/main.html')
-# 用户增加
+
+
+@module.get('/data')
+@authorize("admin:module:main")
+def data():
+    # 获取请求参数
+    name =str_escape(request.args.get("module_name", type=str))
+    code =str_escape(request.args.get("code", type=str))
+    download_address =str_escape(request.args.get("download_address", type=str))
+    renewal_type=str_escape(request.args.get("renewal_type", type=str))
+    user_class =str_escape(request.args.get("user_class", type=int))
+
+
+    mf = ModelFilter()
+    if name:
+        mf.contains(field_name="name", value=name)
+    if code:
+        mf.contains(field_name="code", value=code)
+    if download_address:
+        mf.contains(field_name="download_address", value=download_address)
+    if renewal_type:
+        mf.exact(field_name="renewal_type", value=renewal_type)
+    # orm查询
+    # 使用分页获取data需要.items
+    query = Gridmodule.query.filter(mf.get_filter(Gridmodule)).layui_paginate()
+    count = query.total
+    # "普通用户" if i[5] == 0 else "高级用户" if i[5] == 1 else "钻石用户"
+    return table_api(
+        data=[{
+            'id': item.id,
+            'name': item.name,
+            'code': item.code,
+            'download_address': item.download_address,
+            'renewal_type':  "无" if item.renewal_type  == 0 else "月" if item.renewal_type == 1 else "季" if item.renewal_type == 2 else "年",
+            'create_date': item.create_date,
+        } for item in query],
+        count=query.total)
+    # 返回api
+    return table_api(data=model_to_dicts(schema=GridmoduleOutSchema, data=mail.items), count=count)
 @module.get('/add')
+@authorize("admin:module:add")
 def add():
     return render_template('admin/module/add.html')
 
-
-
-
-import pymysql
-from util.sql import *
-@module.get('/data')
-def data():
-    page = request.args.get('page', type=int)
-    limit = request.args.get('limit', type=int)
-    module_name =escape(request.args.get("module_name"))
-    if not page:
-        page = 1
-    if not limit:
-        limit = 10
-    if not module_name or module_name=="None":
-        module_name =""
-
-    db = pymysql.connect(host=HOST, user=USER, passwd=PASSWD, db=DB, charset=CHARSET, port=PORT,
-                         use_unicode=True)
-    cursor = db.cursor()
-    sql = "SELECT * FROM `grid`.`charging-module` WHERE name LIKE '%s' LIMIT  %s,%s" % (
-    str("%" + module_name + "%"), limit * (page - 1), limit)
-    print(sql)
-    aa = cursor.execute(sql)
-
-    res =cursor.fetchall()
-    data = []
-    for i in res:
-        module={}
-        module['id'] =i[0]
-        module['name'] =i[1]
-        module['code'] =i[2]
-        module['download_address'] =i[3]
-        module['renewal_type'] =i[4]
-        data.append(module)
-
-    resu = {'code': 0, 'message': '', 'data': data, 'count': aa, 'limit': limit}
-    return jsonify(resu);
-
-def str_escape(s):
-    if not s:
-        return None
-    return str(escape(s))
 @module.post('/save')
+@authorize("admin:module:add")
 def save():
     req_json = request.json
     name = str_escape(req_json.get("name"))
-    address = str_escape(req_json.get('address'))
-    contact_number = str_escape(req_json.get('contact_number'))
-
-    db = pymysql.connect(host=HOST, user=USER, passwd=PASSWD, db=DB, charset=CHARSET, port=PORT,
-                         use_unicode=True)
-    cursor = db.cursor()
-    sql  ="INSERT INTO `grid`.`charging-module` (`name`, `address`, `contact_number`) VALUES ('%s', '%s', '%s')"%(name,address,contact_number)
-    aa = cursor.execute(sql)
-    db.commit()
-    return jsonify(success=True, msg="增加成功")
+    code = str_escape(req_json.get('code'))
+    download_address = str_escape(req_json.get('download_address'))
+    renewal_type = str_escape(req_json.get('renewal_type'))
+    moudle = Gridmodule(name=name, code=code, download_address=download_address,renewal_type =0)
+    db.session.add(moudle)
+    db.session.commit()
+    return success_api(msg="增加成功")
 
 
 @module.get('/edit/<int:id>')
+@authorize("admin:module:edit")
 def edit(id):
-    db = pymysql.connect(host=HOST, user=USER, passwd=PASSWD, db=DB, charset=CHARSET, port=PORT,
-                         use_unicode=True)
-    cursor = db.cursor()
-    sql  ="SELECT * FROM `grid`.`charging-module` where `id`= '%s'"%(id)
-    aa = cursor.execute(sql)
-    list =cursor.fetchall()
-    module={}
-    module['id'] = list[0][0]
-    module['name'] = list[0][1]
-    module['address'] = list[0][2]
-    module['contact_number'] = list[0][3]
+    gridmodule = curd.get_one_by_id(Gridmodule, id)
+    return render_template('admin/module/edit.html',module = gridmodule)
 
-    return render_template('admin/module/edit.html',module = module)
 
 @module.get('/info/<int:id>')
+@authorize("admin:module:main")
 def info(id):
-    db = pymysql.connect(host=HOST, user=USER, passwd=PASSWD, db=DB, charset=CHARSET, port=PORT,
-                         use_unicode=True)
-    cursor = db.cursor()
-    sql  ="SELECT * FROM `grid`.`charging-module` where `id`= '%s'"%(id)
-    aa = cursor.execute(sql)
-    list =cursor.fetchall()
+    module = curd.get_one_by_id(Gridmodule, id)
     module={}
-    module['id'] = list[0][0]
-    module['name'] = list[0][1]
-    module['address'] = list[0][2]
-    module['contact_number'] = list[0][3]
+    module['id'] =module.id
+    module['name'] = module.name
+    module['code'] = module.code
+    module['download_address'] = module.download_address
+    module['renewal_type'] = module.renewal_type
+    module['create_date'] = module.create_date
 
+    mf = ModelFilter()
+    mf.exact('user_id',module.id)
 
-    sql  ="SELECT * FROM `grid`.`serial-number` where `module_id`= '%s'"%(id)
-    aa = cursor.execute(sql)
-    lists =cursor.fetchall()
-    sninfo =[]
-    for list in lists:
-        sn = {}
-        sn['id'] = list[0]
-        sn['sn'] = list[1]
-        sn['module_id'] = list[3]
-        sn['effect_months'] = list[1]
-        sn['create_date'] = list[4]
-        sninfo.append(sn)
-    module['sninfo'] =sninfo
+    res =RegisterInfo.query.filter_by(module_id=module.id).all()
 
+    module['sninfo'] =model_to_dicts(schema=RegisterInfoOutSchema, data=res)
     return render_template('admin/module/info.html',module = module)
 
+# 删除用户
 @module.delete('/remove/<int:id>')
+@authorize("admin:module:remove")
 def delete(id):
-    db = pymysql.connect(host=HOST, user=USER, passwd=PASSWD, db=DB, charset=CHARSET, port=PORT, use_unicode=True)
-    cursor = db.cursor()
-    sql = "DELETE FROM `grid`.`charging-module` WHERE `id` = %s" % (id)
-    print(sql)
-    aa = cursor.execute(sql)
-    db.commit()
-    if aa == 0:
-        return jsonify(success=False, msg="删除失败")
-    return jsonify(success=True, msg="删除成功")
+    res = Gridmodule.query.filter_by(id=id).delete()
+    db.session.commit()
+    if not res:
+        return fail_api(msg="删除失败")
+    return success_api(msg="删除成功")
 
 
-
-# 批量删除
 @module.delete('/batchRemove')
+@authorize("admin:module:remove")
 def batch_remove():
     ids = request.form.getlist('ids[]')
-    db = pymysql.connect(host=HOST, user=USER, passwd=PASSWD, db=DB, charset=CHARSET, port=PORT, use_unicode=True)
-    cursor = db.cursor()
-
     for id in ids:
-        sql = "DELETE FROM `grid`.`charging-module` WHERE `id` = %s" % (id)
-        aa = cursor.execute(sql)
-        if (aa==0):
-            return jsonify(success=False, msg="删除失败")
-    db.commit()
-    return jsonify(success=True, msg="删除成功")
+        res = Gridmodule.query.filter_by(id=id).delete()
+        db.session.commit()
+    return success_api(msg="批量删除成功")
+
+
+
+
 

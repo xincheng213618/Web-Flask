@@ -12,9 +12,17 @@
     <div class="layui-card-body">
         <form class="layui-form" action="" lay-filter="plugin-query-form">
             <div class="layui-form-item">
-                <label class="layui-form-label">代理商信息</label>
+                <label class="layui-form-label">代理商名称</label>
                 <div class="layui-input-inline">
                     <input type="text" name="vendor_name" placeholder="" class="layui-input">
+                </div>
+                <label class="layui-form-label">地址</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="address" placeholder="" class="layui-input">
+                </div>
+                <label class="layui-form-label">联系方式</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="contact_number" placeholder="" class="layui-input">
                 </div>
                 <button class="pear-btn pear-btn-md pear-btn-primary" lay-submit lay-filter="vendor-query">
                     <i class="layui-icon layui-icon-search"></i>
@@ -57,11 +65,18 @@
 
 {# 用户修改操作 #}
 <script type="text/html" id="vendor-bar">
-    <button class="pear-btn pear-btn-primary pear-btn-sm" lay-event="edit"><i class="pear-icon pear-icon-edit"></i>
-    </button>
-    <button class="pear-btn pear-btn-danger pear-btn-sm" lay-event="remove"><i
-            class="pear-icon pear-icon-ashbin"></i>
-    </button>
+    {% if authorize("admin:vendor:add") %}
+        <button class="pear-btn pear-btn-primary pear-btn-md" lay-event="add">
+            <i class="pear-icon pear-icon-add"></i>
+            新增
+        </button>
+    {% endif %}
+    {% if authorize("admin:vendor:remove") %}
+        <button class="pear-btn pear-btn-md" lay-event="batchRemove">
+            <i class="pear-icon pear-icon-ashbin"></i>
+            删除
+        </button>
+    {% endif %}
 </script>
 
 {# 用户注册时间 #}
@@ -83,6 +98,7 @@
         let dtree = layui.dtree
         let popup = layui.popup
         let common = layui.common
+        let element =layui.element
 
         let MODULE_PATH = '/vendor/'
         let cols = [
@@ -94,7 +110,9 @@
                 {title: '名称', field: 'name', align: 'center',sort:true },
                 {title: '地址', field: 'address', align: 'center',sort:true},
                 {title: '联系方式', field: 'contact_number', align: 'center',sort:true},
-                {title: '操作', toolbar: '#vendor-bar', align: 'center', width: 130}
+                {% if authorize("admin:vendor:edit") %}
+                    {title: '操作', toolbar: '#vendor-bar', align: 'center', width: 130}
+                {% endif %}
             ]
         ]
 
@@ -153,6 +171,7 @@
 
 
         window.info = function (obj) {
+
             layer.open({
                 type: 2,
                 title: '详细信息',
@@ -216,7 +235,7 @@
 
         window.batchRemove = function (obj) {
 
-            let data = table.checkStatus(obj.config.id).data
+            let data = table.checkStatus('vendor-table').data
             if (data.length === 0) {
                 layer.msg('未选中数据', {
                     icon: 3,
@@ -225,7 +244,7 @@
                 return false
             }
             var ids = []
-            var hasCheck = table.checkStatus('user-table')
+            var hasCheck = table.checkStatus('vendor-table')
             var hasCheckData = hasCheck.data
             if (hasCheckData.length > 0) {
                 $.each(hasCheckData, function (index, element) {
@@ -248,9 +267,7 @@
                     success: function (result) {
                         layer.close(loading)
                         if (result.success) {
-                            popup.success(result.msg, function () {
                                 table.reload('vendor-table')
-                            })
                         } else {
                             popup.failure(result.msg)
                         }

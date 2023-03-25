@@ -10,16 +10,16 @@
         <div class="main-container">
             <div class="main-container">
                 <div class="layui-form-item">
-                    <label class="layui-form-label">名称</label>
+                    <label class="layui-form-label">模块名</label>
                     <div class="layui-input-block">
                         <input type="text" name="name" lay-verify="title" autocomplete="off" placeholder="请输入标题"
                                class="layui-input">
                     </div>
                 </div>
                 <div class="layui-form-item">
-                    <label class="layui-form-label">地址</label>
+                    <label class="layui-form-label">模块文件名</label>
                     <div class="layui-input-block">
-                        <input type="text" name="address" lay-verify="title" autocomplete="off" placeholder="请输入标题"
+                        <input type="text" name="code" lay-verify="title" autocomplete="off" placeholder="请输入标题"
                                class="layui-input">
                     </div>
                 </div>
@@ -32,13 +32,20 @@
                         <button type="button" class="layui-btn" id="logo-upload-button">开始上传</button>
                     </div>
                 </form>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">续费模式</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="renewal_type" lay-verify="title" autocomplete="off" placeholder="请输入标题"
+                               class="layui-input">
+                    </div>
+                </div>
 
             </div>
         </div>
     </div>
     <div class="bottom">
         <div class="button-container">
-            <button type="submit" class="pear-btn pear-btn-primary pear-btn-sm" lay-submit="" lay-filter="vendor-save">
+            <button type="submit" class="pear-btn pear-btn-primary pear-btn-sm" lay-submit="" lay-filter="module-save">
                 <i class="layui-icon layui-icon-ok"></i>
                 提交
             </button>
@@ -64,7 +71,6 @@
           , size: 100000
           , bindAction: '#logo-upload-button'
           , done: function (res) {
-              alert(11111)
               if (res.success) {
                   layer.msg(res.msg, {icon: 1, time: 500}, function () {
                       parent.layer.close(parent.layer.getFrameIndex(window.name));//关闭当前页
@@ -75,10 +81,9 @@
               }
           }
       });
-    form.on('submit(vendor-save)', function (data) {
-
+    form.on('submit(module-save)', function (data) {
       $.ajax({
-        url: '/vendor/save',
+        url: '/module/save',
         data: JSON.stringify(data.field),
         dataType: 'json',
         contentType: 'application/json',

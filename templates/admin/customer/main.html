@@ -69,11 +69,13 @@
 
 {# 用户修改操作 #}
 <script type="text/html" id="customer-bar">
-    <button class="pear-btn pear-btn-primary pear-btn-sm" lay-event="edit"><i class="pear-icon pear-icon-edit"></i>
-    </button>
-    <button class="pear-btn pear-btn-danger pear-btn-sm" lay-event="remove"><i
-            class="pear-icon pear-icon-ashbin"></i>
-    </button>
+    {% if authorize("admin:customer:edit") %}
+        <button class="pear-btn pear-btn-primary pear-btn-sm" lay-event="edit"><i class="pear-icon pear-icon-edit"></i>
+        </button>
+        <button class="pear-btn pear-btn-danger pear-btn-sm" lay-event="remove"><i
+                class="pear-icon pear-icon-ashbin"></i>
+        </button>
+    {% endif %}
 </script>
 
 {# 用户注册时间 #}
@@ -95,6 +97,7 @@
         let dtree = layui.dtree
         let popup = layui.popup
         let common = layui.common
+        let element =layui.element
 
         let MODULE_PATH = '/customer/'
         let cols = [
@@ -108,7 +111,10 @@
                 {title: '邮件 ', field: 'email_address', align: 'center', sort: true},
                 {title: '手机 ', field: 'contact_number', align: 'center', sort: true},
                 {title: 'VIP ', field: 'user_class', align: 'center', width: 160, sort: true},
-                {title: '操作', toolbar: '#customer-bar', align: 'center', width: 130}
+                {% if authorize("admin:customer:edit") %}
+                    {title: '操作', toolbar: '#customer-bar', align: 'center', width: 130}
+                {% endif %}
+
             ]
         ]
 
@@ -126,8 +132,8 @@
 
         })
         table.on('rowDouble(customer-table)', function (obj) {
-            {#window.open(MODULE_PATH + 'info/' + obj.data['id'])#}
-            layer.open({
+
+                        layer.open({
                 type: 2,
                 title: '信息',
                 shade: 0.1,
@@ -137,6 +143,7 @@
                     table.reload('customer-table')
                 }
             })
+
         });
 
 
@@ -182,17 +189,11 @@
         })
 
         window.info = function (obj) {
-            layer.open({
-                type: 2,
-                title: '详细信息',
-                shade: 0,
-                area: ['400px', '400px'],
-                content: MODULE_PATH + 'info',
-                success: function (layero) {
-                    let iframeWin = window[layero.find('iframe')[0]['name']]
-                    iframeWin.show(obj.data)
-                }
-            })
+            element.tabAdd('demo', {
+                title: '详细信息'
+                , content: MODULE_PATH + 'info',
+            });
+
         }
         window.add = function () {
             layer.open({
