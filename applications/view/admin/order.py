@@ -1,7 +1,7 @@
 from flask import Blueprint, request, render_template,jsonify,escape
 
 
-from applications.models import GridUser,RegisterInfo
+from applications.models import GridUser,RegisterInfo,Gridorder
 from flask import Blueprint, render_template, request, current_app
 from flask_login import current_user
 from flask_mail import Message
@@ -24,110 +24,90 @@ def main():
 # 用户增加
 
 
-import pymysql
-from util.sql import *
 @order.get('/data')
 @authorize("admin:order:main")
 def data():
-    page = request.args.get('page', type=int)
-    limit = request.args.get('limit', type=int)
-    order_name =escape(request.args.get("order_name"))
-    if not page:
-        page = 1
-    if not limit:
-        limit = 10
-    if not order_name or order_name=="None":
-        order_name =""
+    # 获取请求参数
+    name =str_escape(request.args.get("customer_name", type=str))
+    legal_address =str_escape(request.args.get("legal_address", type=str))
+    email_address =str_escape(request.args.get("email_address", type=str))
+    contact_number=str_escape(request.args.get("contact_number", type=str))
+    user_class =str_escape(request.args.get("user_class", type=int))
 
-    db = pymysql.connect(host=HOST, user=USER, passwd=PASSWD, db=DB, charset=CHARSET, port=PORT,
-                         use_unicode=True)
-    cursor = db.cursor()
-    # sql  ="SELECT * FROM `grid`.`order` WHERE name LIKE '%s' LIMIT  %s,%s"%(str("%"+order_name +"%"),limit*(page-1),limit)
-    # print(sql)
-    # aa = cursor.execute(sql)
-    #
-    # res =cursor.fetchall()
-    res =[]
-    data = []
-    for i in res:
-        order={}
-        order['id'] =i[0]
-        order['name'] =i[1]
-        order['address'] =i[2]
-        order['contact_number'] =i[3]
-        data.append(order)
+    mf = ModelFilter()
+    if name:
+        mf.contains(field_name="name", value=name)
+    if legal_address:
+        mf.contains(field_name="legal_address", value=legal_address)
+    if email_address:
+        mf.contains(field_name="email_address", value=email_address)
+    if contact_number:
+        mf.contains(field_name="contact_number", value=contact_number)
+    if user_class:
+        mf.exact(field_name="user_class", value=user_class)
+    # orm查询
+    # 使用分页获取data需要.items
+    query = GridUser.query.filter(mf.get_filter(GridUser)).layui_paginate()
+    count = query.total
+    # "普通用户" if i[5] == 0 else "高级用户" if i[5] == 1 else "钻石用户"
+    return table_api(
+        data=[{
+            'id': user.id,
+            'name': user.name,
+            'legal_address': user.legal_address,
+            'email_address': user.email_address,
+            'contact_number': user.contact_number,
+            'user_class': "普通用户" if user.user_class  == 0 else "高级用户" if user.user_class == 1 else "钻石用户",
+            'create_date': user.create_date,
+        } for user in query],
+        count=query.total)
+    # 返回api
+    return table_api(data=model_to_dicts(schema=GridUserOutSchema, data=mail.items), count=count)
 
-    sql ="SELECT COUNT(*) FROM `grid`.`order`"
-    cursor.execute(sql)
-    count =cursor.fetchall()
-
-    resu = {'code': 0, 'message': '', 'data': data, 'count': count[0][0], 'limit': limit}
-    return jsonify(resu);
-
-def str_escape(s):
-    if not s:
-        return None
-    return str(escape(s))
 
 @order.get('/add')
+@authorize("admin:order:add")
 def add():
     return render_template('admin/order/add.html')
 @order.post('/save')
+@authorize("admin:order:add")
 def save():
     req_json = request.json
-    name = str_escape(req_json.get("name"))
-    address = str_escape(req_json.get('address'))
-    contact_number = str_escape(req_json.get('contact_number'))
+    user_id = str_escape(req_json.get("user_id"))
+    serial_id = str_escape(req_json.get('serial_id'))
+    payment = str_escape(req_json.get('payment'))
+    effect_date = str_escape(req_json.get('effect_date'))
+    expire_date = str_escape(req_json.get('expire_date'))
 
-    db = pymysql.connect(host=HOST, user=USER, passwd=PASSWD, db=DB, charset=CHARSET, port=PORT,
-                         use_unicode=True)
-    cursor = db.cursor()
-    sql  ="INSERT INTO `grid`.`order` (`name`, `address`, `contact_number`) VALUES ('%s', '%s', '%s')"%(name,address,contact_number)
-    aa = cursor.execute(sql)
-    db.commit()
-    return jsonify(success=True, msg="增加成功")
-
+    item = Gridorder(user_id=user_id, serial_id=serial_id, payment=payment,effect_date =effect_date,expire_date =expire_date)
+    db.session.add(item)
+    db.session.commit()
+    return success_api(msg="增加成功")
 
 @order.get('/edit/<int:id>')
+@authorize("admin:order:edit")
 def edit(id):
-    # db = pymysql.connect(host=HOST, user=USER, passwd=PASSWD, db=DB, charset=CHARSET, port=PORT,
-    #                      use_unicode=True)
-    # cursor = db.cursor()
-    # sql  ="INSERT INTO `grid`.`order` (`name`, `address`, `contact_number`) VALUES ('%s', '%s', '%s')"%(name,address,contact_number)
-    # aa = cursor.execute(sql)
-    return render_template('admin/user/edit.html')
+    item = curd.get_one_by_id(Gridorder, id)
+    return render_template('admin/module/edit.html',order = item)
 
 
+
+#
 @order.delete('/remove/<int:id>')
+@authorize("admin:order:remove")
 def delete(id):
-    db = pymysql.connect(host=HOST, user=USER, passwd=PASSWD, db=DB, charset=CHARSET, port=PORT, use_unicode=True)
-    cursor = db.cursor()
-    sql = "DELETE FROM `grid`.`order` WHERE `id` = %s" % (id)
-    print(sql)
-    aa = cursor.execute(sql)
-    db.commit()
-    if aa == 0:
-        return jsonify(success=False, msg="删除失败")
-    return jsonify(success=True, msg="删除成功")
-#
-# # 删除用户
-# @order.delete('/remove/<int:id>')
-# def delete(id):
-#     res = Mail.query.filter_by(id=id).delete()
-#     if not res:
-#         return fail_api(msg="删除失败")
-#     db.session.commit()
-#     return success_api(msg="删除成功")
-#
-#
-# # 批量删除
-# @order.delete('/batchRemove')
-# def batch_remove():
-#     ids = request.form.getlist('ids[]')
-#     for id in ids:
-#         res = Mail.query.filter_by(id=id).delete()
-#         if not res:
-#             return fail_api(msg="批量删除失败")
-#     db.session.commit()
-#     return success_api(msg="批量删除成功")
-#
+    res = Gridorder.query.filter_by(id=id).delete()
+    db.session.commit()
+    if not res:
+        return fail_api(msg="删除失败")
+    return success_api(msg="删除成功")
+
+
+@order.delete('/batchRemove')
+@authorize("admin:vendor:remove")
+def batch_remove():
+    ids = request.form.getlist('ids[]')
+    for id in ids:
+        res = Gridorder.query.filter_by(id=id).delete()
+        db.session.commit()
+    return success_api(msg="批量删除成功")

@@ -40,3 +40,13 @@ class Gridmodule(db.Model):
     download_address = db.Column(db.Integer, comment='download_address')
     renewal_type =db.Column(db.DateTime, comment='renewal_type')
     create_date = db.Column(db.DateTime, default=datetime.datetime.now, comment='创建时间')
+
+class Gridorder(db.Model):
+    __tablename__ = 'order'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True, comment='用户编号')
+    user_id = db.Column(db.Integer, comment='user_id')
+    serial_id = db.Column(db.Integer, comment='serial_id')
+    payment = db.Column(db.Integer, comment='payment')
+    effect_date = db.Column(db.DateTime, comment='effect_date')
+    expire_date = db.Column(db.DateTime, comment='expire_date')
+    create_date = db.Column(db.DateTime, default=datetime.datetime.now, comment='创建时间')

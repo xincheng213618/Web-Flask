@@ -18,17 +18,15 @@ vendor = Blueprint('vendor', __name__, url_prefix='/vendor')
 
 # 用户管理
 @vendor.get('/')
+@authorize("admin:vendor:mian")
 def main():
     return render_template('admin/vendor/main.html')
 # 用户增加
-@vendor.get('/add')
-def add():
-    return render_template('admin/vendor/add.html')
+
 
 import pymysql
-from util.sql import *
-
 @vendor.get('/data')
+@authorize("admin:vendor:mian")
 def data():
     # 获取请求参数
     name =str_escape(request.args.get("vendor_name", type=str))
@@ -59,9 +57,13 @@ def data():
         count=query.total)
     return table_api(data=model_to_dicts(schema=GridUserOutSchema, data=mail.items), count=count)
 
-
+@vendor.get('/add')
+@authorize("admin:vendor:add")
+def add():
+    return render_template('admin/vendor/add.html')
 
 @vendor.post('/save')
+@authorize("admin:vendor:add")
 def save():
     req_json = request.json
     name = str_escape(req_json.get("name"))
@@ -75,11 +77,13 @@ def save():
 
 
 @vendor.get('/edit/<int:id>')
+@authorize("admin:vendor:edit")
 def edit(id):
     item = curd.get_one_by_id(GridVendor, id)
     return render_template('admin/module/edit.html',vendor = item)
 
 @vendor.get('/info/<int:id>')
+@authorize("admin:vendor:main")
 def info(id):
     vendor = curd.get_one_by_id(GridVendor, id)
     vendor={}

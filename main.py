@@ -2,6 +2,7 @@ import flask
 from flask import Blueprint, request, render_template,jsonify,escape
 import re,pymysql,json
 import time
+
 HOST = 'xc213618.ddns.me'
 USER = 'root'
 PASSWD = 'xincheng'
@@ -12,34 +13,6 @@ CHARSET = 'utf8'
 # 创建一个服务，把当前这个python文件当做一个服务
 app = flask.Flask(__name__)
 
-@app.route('/Userlogin', methods=['post'])
-def Userlogin():
-    name = request.values.get('name')
-    legal_address = request.values.get('legal_address')
-    email_address = request.values.get('email_address')
-    contact_number = request.values.get('contact_number')
-    user_class = request.values.get('user_class')
-    if not name:
-        resu = {'state': 1, 'message': '姓名不能为空'}
-        return jsonify(resu)
-
-    db = pymysql.connect(host=HOST, user=USER, passwd=PASSWD, db=DB, charset=CHARSET, port=PORT, use_unicode=True)
-    cursor = db.cursor()
-    sql = "SELECT * FROM  `user` WHERE `name` = '%s'" % (name);
-    print(sql)
-    if (cursor.execute(sql) != 0):
-        return {'state': 0, 'message': '', 'userid': cursor.fetchall()[0][0]};
-    else:
-        create_date = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-        sql = "INSERT INTO `user` (name, legal_address, email_address, contact_number,user_class) \
-               VALUES (%s, '%s', '%s','%s',%s)" % \
-              (name, legal_address, email_address, contact_number, 0)
-        print(sql)
-        cursor.execute(sql)
-        db.commit()
-        sql = "SELECT * FROM  `user` WHERE `name` = '%s'" % (name);
-        cursor.execute(sql)
-        return {'state': 0, 'message': '', 'userid': cursor.fetchall()[0][0]};
 
 @app.route('/register', methods=['post'])
 def register():

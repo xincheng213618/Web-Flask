@@ -2,8 +2,6 @@ from flask_login import current_user,login_required
 
 from main import *
 from applications import create_app
-
-
 from util import smtp
 def send(email):
     receivers = email

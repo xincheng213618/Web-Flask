@@ -2,105 +2,9 @@ from main import *
 from flask import render_template,request,jsonify,redirect
 import pymysql
 
-
 @app.route('/generateSNCode', methods=['get'])
 def generateSNCode():
     return render_template("generateSNCode.html")
-
-@app.route('/orderadd', methods=['get', 'POST'])
-def orderadd():
-    if request.method == 'GET':
-        return render_template("orderadd.html")
-    elif request.method == "POST":
-        serial = request.values.get("vendor")
-        moudle = request.values.get("moudle")
-        payment = request.values.get("payment")
-        effectdate = request.values.get("effectdate")
-
-        if not payment:
-            payment = 0
-        try:
-            db = pymysql.connect(host=HOST, user=USER, passwd=PASSWD, db=DB, charset=CHARSET, port=PORT,
-                                 use_unicode=True)
-            cursor = db.cursor()
-
-            sql = "SELECT `id`,`name` FROM `grid`.`vendor` WHERE `name` = '%s'" % (vendor);
-            num = cursor.execute(sql);
-            if (num == 0):
-                return returnMsg("找不到供应商，请重新输入或者注册")
-
-            vendor_id =  cursor.fetchall()[0][0]
-
-            sql = "SELECT `id`,`name` FROM `grid`.`charging-module` WHERE `name` = '%s'" % (moudle);
-            num = cursor.execute(sql);
-            if (num == 0):
-                return returnMsg("版本信息有误")
-
-            module_id = cursor.fetchall()[0][0]
-
-
-            effect_date = time.strftime("%Y-%m-%d %H:%M:%S",time.strptime(effectdate, "%Y-%m-%d"))
-            expire_date = time.strftime("%Y-%m-%d %H:%M:%S", time.strptime("2038-01-01", "%Y-%m-%d"))
-            sql = "INSERT INTO `grid`.`order` (`user_id`, `serial_id`, `payment`, `effect_date`, `expire_date`, `create_date`) VALUES (%s, %s, %s, '%s', '%s', '%s')"%(vendor_id,module_id,payment,effect_date,expire_date,create_date);
-            print(sql)
-            num = cursor.execute(sql)
-            db.commit()
-            print(num)
-            if (num == 1):
-                return returnMsg()
-
-            else:
-                return returnMsg("插入失败")
-        except Exception as e:
-            print(e.args)
-            return returnMsg(e.args)
-
-def orderadd1(user_id,serial_id,payment,effect_date,expire_date):
-    create_date = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-    try:
-        db = pymysql.connect(host=HOST, user=USER, passwd=PASSWD, db=DB, charset=CHARSET, port=PORT,
-                             use_unicode=True)
-        cursor = db.cursor()
-
-        sql = "INSERT INTO `grid`.`order` (`user_id`, `serial_id`, `payment`, `effect_date`, `expire_date`, `create_date`) VALUES (%s, %s, %s, '%s', '2023-03-02 18:51:50', '%s')" % (
-        user_id, serial_id, payment, effect_date, create_date);
-        print(sql)
-        num = cursor.execute(sql)
-        db.commit()
-        print(num)
-        if (num == 1):
-            return returnMsg()
-        else:
-            return returnMsg("插入失败")
-    except Exception as e:
-        return returnMsg(e.args)
-
-
-import uuid
-import  util.redistaic
-@app.route('/email_captcha/')
-def email_captcha():
-    email = request.args.get('email')
-    if not email:
-        resu = {'code': 1, 'message': '请输入验证码'}
-        return jsonify(resu)
-    '''
-    生成随机验证码，保存到memcache中，然后发送验证码，与用户提交的验证码对比
-    '''
-    captcha = str(uuid.uuid1())[:6]  # 随机生成6位验证码
-
-    util.redistaic.SetValue(email,captcha)
-
-    # 给用户提交的邮箱发送邮件
-    try:
-        smtp.receivers = email
-        # smtp.sendmail('Grid邮箱验证码','您的验证码是：%s' % captcha)  # 发送
-        smtp.sendmail('Grid邮箱验证码','您的验证码是：http://127.0.0.1:18888/email_captcha_Vaild/%s?email=%s' % (captcha,email))  # 发送
-        resu = {'code': 0, 'message': ''}
-        return jsonify(resu)
-    except Exception as e:
-        resu = {'code': 1, 'message': e.args}
-        return jsonify(resu)
 
 
 
@@ -155,8 +59,6 @@ def GetModule():
         modulelist.append(row[0]);
     resu = {'state': 0, 'message': '', 'list': modulelist}
     return jsonify(resu)
-
-
 import random, string
 
 @app.route("/GeneraSNCode", methods=['post'])
@@ -203,9 +105,6 @@ def GeneraSNCode():
     # smtpdemo.receivers =["114803203@qq.com"]
     resu = {'state': 0, 'message': '', 'sn': sn}
     return jsonify(resu)
-def sendemailSN(receivers, vendor, sn):
-    smtp.receivers = receivers
-    smtp.sendmail("Grid序列号", "尊敬的" + vendor + ":\n\r" + "您购买的序列号为： \n\r" + sn)
 
 
 @app.route('/addSNCode', methods=['post'])
@@ -238,25 +137,3 @@ def addSNCode():
         resu = {'state': 1, 'message': "数据库连接失败"}
     return jsonify(resu)  # 将字典转换为json串, json是字符串
 
-
-from util import smtp
-@app.route('/sendsmtp', methods=['post'])
-def sendsmtp():
-    print("发送邮件")
-    subject = request.values.get('subject')
-    content = request.values.get('content')
-    receiver = request.values.get('receivers')
-    if not subject and not content and not receiver:
-        resu = {'state': 1, 'message': '参数不能存在空值'}
-        return jsonify(resu)
-
-    receivers =[receiver]
-    smtp.receivers = receivers;
-    print(content)
-    code, msg = smtp.sendmail(subject, content)
-    if code == 0:
-        resu = {'state': code, 'message': msg}
-        return jsonify(resu)
-    else:
-        resu = {'state': code, 'message': msg}
-        return jsonify(resu)  # 将字典转换为json串, json是字符串
