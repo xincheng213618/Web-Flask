@@ -6,74 +6,71 @@
     {% include 'admin/common/header.html' %}
 </head>
 <body>
-<form class="layui-form" action="">
-    <div class="mainBox">
-        <div class="main-container">
-            <div class="main-container">
-                <div class="layui-form-item layui-hide">
-                    <label class="layui-form-label">编号</label>
-                    <div class="layui-input-block">
-                        <input type="text" value="{{ vendor.id }}" name="userId" lay-verify="title"
-                               autocomplete="off" placeholder="请输入标题" class="layui-input">
-                    </div>
-                </div>
-                <div class="layui-form-item">
-                    <label class="layui-form-label">姓名</label>
-                    <div class="layui-input-block">
-                        <input type="text" value="{{ vendor.name }}" name="username" lay-verify="title"
-                               autocomplete="off" placeholder="请输入姓名" class="layui-input">
-                    </div>
-                </div>
-                <div class="layui-form-item">
-                    <label class="layui-form-label">公司地址</label>
-                    <div class="layui-input-block">
-                        <input type="text" value="{{ vendor.address }}" name="realName" lay-verify="title"
-                               autocomplete="off" placeholder="请输入地址"
-                               class="layui-input">
-                    </div>
-                </div>
-                <div class="layui-form-item">
-                    <label class="layui-form-label">联系方式</label>
-                    <div class="layui-input-block">
-                        <input type="text" value="{{ vendor.contact_number }}" name="realName" lay-verify="title"
-                               autocomplete="off" placeholder="请输入联系方式"
-                               class="layui-input">
-                    </div>
-                </div>
 
-                <div class="layui-form-item">
-                    <div class="layui-card">
-                        <div class="layui-card-body">
-                            <table id="vendor-info-table" lay-filter="vendor-info-table"></table>
-                        </div>
-                    </div>
+
+<div class="layui-bg-gray" style="padding: 30px;">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-panel">
+            <div class="layui-form-item layui-hide">
+                <label class="layui-form-label">编号</label>
+                <div class="layui-form-label-col">
+                    <label>{{ vendor.id }}</label>
                 </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">姓名</label>
+                <label  class="layui-form-label-col">{{ vendor.name }}</label>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">公司地址</label>
+                <label class="layui-form-label-col">{{ vendor.address }}</label>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">联系方式</label>
+                <label class="layui-form-label-col">{{ vendor.contact_number }}</label>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">开关-默认关</label>
+                <div class="layui-input-block">
+                    <input type="checkbox" checked="" name="open" lay-skin="switch" lay-filter="switchTest"
+                           lay-text="ON|OFF">
+                </div>
+            </div>
+
+
+
+        </div>
+        <div class="layui-panel">
+            <div class="layui-card">
+                <div class="layui-card-body">
+                    <table id="vendor-info-table" lay-filter="vendor-info-table"></table>
                 </div>
             </div>
         </div>
-        <div class="bottom">
-            <div class="button-container">
-                <button type="submit" class="pear-btn pear-btn-primary pear-btn-sm" lay-submit=""
-                        lay-filter="vendor-update">
-                    <i class="layui-icon layui-icon-ok"></i>
-                    确定
-                </button>
-            </div>
-        </div>
-</form>
+    </div>
+</div>
+
 {% include 'admin/common/footer.html' %}
 <script>
-    layui.use(['table', 'form', 'jquery', 'element', 'util'],function () {
+    layui.use(['table', 'form', 'jquery', 'element', 'util'], function () {
         let form = layui.form
         let $ = layui.jquery
         let dtree = layui.dtree
         var table = layui.table;
+        //指定开关事件
+        form.on('switch(switchTest)', function (data) {
+            layer.msg('开关checked：' + (this.checked ? 'true' : 'false'), {
+                offset: '6px'
+            });
+            layer.tips('温馨提示：请注意开关状态的文字可以随意定义，而不仅仅是ON|OFF', data.othis)
+        });
+
         let cols = [
             [
-                {title: '序列号', field: 'sn', align: 'left' ,width:"250"},
-                {title: '模块', field: 'module_id', align: 'left',width:"150"},
-                {title: '有效期', field: 'effect_months', align: 'left',width:"150"},
-                {title: '创建日期', field: 'create_date', align: 'left',width:"250"},
+                {title: '序列号', field: 'sn', align: 'left', width: "250"},
+                {title: '模块', field: 'moudle', align: 'left', width: "140"},
+                {title: '有效期', field: 'effect_months', align: 'left', width: "200"},
+                {title: '创建日期', field: 'create_date', align: 'left', width: "250"},
             ]
         ]
         var sninfo = {{ vendor.sninfo|tojson }};

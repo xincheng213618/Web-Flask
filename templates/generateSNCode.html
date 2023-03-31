@@ -160,22 +160,18 @@
             <div class="col-md-offset-3 col-md-6">
                 <form class="form-horizontal">
                     <span class="heading">生成序列号</span>
+
                     <div class="form-group">
-                        <input class="form-control" id="inputPassword1" list="browsers" autocomplete="on" placeholder="代理商名称">
-                        <datalist id="browsers">
-                        </datalist>
-                        <i class="fa fa-lock"></i>
+                        <select class="form-control" id="vendorSelect">
+                        </select>
                     </div>
                     <div class="form-group">
                         <select v-model="key" @change="onChange($event)" class="form-control" id="moudleSelect">
-                            <option disabled value="">请选择</option>
-                            <option>基础版</option>
-                            <option>算法模块加强版</option>
                         </select>
                     </div>
                     <div id="divtime" class="form-group" style="display: none">
-                        <input class="form-control" id="inputPassword3" placeholder="有效期信息">
-                        <i class="fa fa-lock"></i>
+                        <input type="text" name="date" id="date" lay-verify="date" placeholder="yyyy-MM-dd"
+                               autocomplete="off" class="layui-input">
                     </div>
                     <div id="localapp" class="form-group" align="center">
                         <input id="box1" type="button" type="submit" @click="vuefunction()" value="生成"
@@ -196,33 +192,41 @@
 {% include 'admin/common/footer.html' %}
 
 <script type="text/javascript">
-    window.onload = function () {
-        var datalist = document.getElementById("browsers");
-        console.log(datalist)
-        getRegionurl = "vendor/data"
-        axios.get(getRegionurl,{
-            params: {
-                page: 1,
-                limit: '10',
-            }}).then(function (response) {
-            for (var o in response.data.data) {
-                var option = document.createElement("option");
-                option.text = response.data.data[o].name
-                datalist.appendChild(option);
-            }
-        })
+    layui.use(['form', 'jquery', 'dtree'], function () {
+        let form = layui.form
+        let $ = layui.jquery
+        let dtree = layui.dtree
+        var laydate = layui.laydate;
 
-        {#moudlelist = document.getElementById("moudlelist");#}
-        {#getModuleUrl = "/getModule"#}
-        {#axios.get(getModuleUrl)#}
-        {#    .then(function (response) {#}
-        {#        for (var o in response.data.list) {#}
-        {#            var option = document.createElement("option");#}
-        {#            option.text = response.data.list[o]#}
-        {#            moudlelist.appendChild(option);#}
-        {#        }#}
-        {#    })#}
-    }
+        var modules = {{modules|tojson }};
+
+        var select = document.getElementById('moudleSelect');
+        for (var i = 0; i < modules.length; i++) {
+            var option = document.createElement("option");
+            option.setAttribute("value", modules[i].id);
+            option.innerText = modules[i].title;
+            select.appendChild(option)
+        }
+        var vendors = {{vendors|tojson }};
+
+        var select1 = document.getElementById('vendorSelect');
+        for (var i = 0; i < vendors.length; i++) {
+            var option = document.createElement("option");
+            option.setAttribute("value", vendors[i].id);
+            option.innerText = vendors[i].title;
+            select1.appendChild(option)
+        }
+
+        form.render("select");
+        form.render("select1");
+
+        laydate.render({
+            elem: '#date'
+        });
+
+
+    })
+
     new Vue({
         el: '#moudleSelect',
         data: {
@@ -231,7 +235,7 @@
         methods: {
             onChange(event) {
                 console.log(event.target.value)
-                if (event.target.value == "基础版") {
+                if (event.target.value == "1") {
                     document.getElementById("divtime").style.display = "none"
                 } else {
                     document.getElementById("divtime").style.display = ""
@@ -242,41 +246,15 @@
     })
 
     new Vue({
-        el: "#divmail",
-        methods: {
-            sendeamil: function () {
-                var input = document.getElementById("inputPassword5");
-                var vendor = document.getElementById("inputPassword1");
-                var sn = document.getElementById("inputPassword4");
-                if (sn.value == "") {
-                    return;
-                }
-                if (input.value == "") {
-                    return;
-                }
-
-                url = "/sendsmtp"
-                var postforms = new FormData();
-                postforms.append("subject", "Grid序列号")
-                postforms.append("content", "尊敬的" + vendor.value + ":\n\r" + "您购买的序列号为： \n\r" + sn.value)
-                postforms.append("receivers", input.value)
-                axios.post(url, postforms).then(response => {
-                    alert("false")
-                })
-            }
-        }
-
-    })
-
-    new Vue({
         el: '#localapp',
         methods: {
             vuefunction: function () {
                 var vendor = document.getElementById("inputPassword1");
                 var moudleSelect = document.getElementById("moudleSelect");
+                var vendorSelect = document.getElementById("vendorSelect");
                 var postforms = new FormData();
-                postforms.append("vendor", vendor.value)
-                postforms.append("moudle", moudleSelect.value)
+                postforms.append("vendor_id", vendorSelect.value)
+                postforms.append("module_id", moudleSelect.value)
                 console.log(moudleSelect.value)
 
                 url = "/GeneraSNCode";

@@ -1,11 +1,39 @@
 from main import *
-from flask import render_template,request,jsonify,redirect
 import pymysql
+import time
+
+from flask import Blueprint, request, render_template, jsonify, escape
+from applications.models import GridUser, RegisterInfo, GridVendor, Gridregion, GridSn,Gridmodule,Gridorder
+from flask import Blueprint, render_template, request, current_app,redirect
+from flask_login import current_user
+from flask_mail import Message
+from applications.common.curd import model_to_dicts
+from applications.common.helper import ModelFilter
+from applications.common.utils.http import table_api, fail_api, success_api
+from applications.common.utils.rights import authorize
+from applications.common.utils.validate import str_escape
+from applications.extensions import db, flask_mail
+from applications.models import Mail
+from applications.schemas import GridUserOutSchema, RegisterInfoOutSchema, GridVendorOutSchema
+from applications.common import curd
+
 
 @app.route('/generateSNCode', methods=['get'])
 def generateSNCode():
-    return render_template("generateSNCode.html")
+    query = Gridmodule.query.filter().all()
+    modules = [{
+        'id': item.id,
+        'title': item.name,
+    } for item in query]
 
+    query = GridVendor.query.filter().all()
+    vendors = [{
+        'id': item.id,
+        'title': item.name,
+    } for item in query]
+
+
+    return render_template("generateSNCode.html",vendors =vendors,modules=modules)
 
 
 from werkzeug.routing import BaseConverter
@@ -63,35 +91,18 @@ import random, string
 
 @app.route("/GeneraSNCode", methods=['post'])
 def GeneraSNCode():
-    vendor = request.values.get('vendor')
-    moudle = request.values.get('moudle')
-
-    if not vendor:
+    vendor_id = request.values.get('vendor_id')
+    module_id = request.values.get('module_id')
+    if not vendor_id or not module_id:
         resu = {'state': 1, 'message': '参数不能存在空值'}
         return jsonify(resu)
 
     db = pymysql.connect(host=HOST, user=USER, passwd=PASSWD, db=DB, charset=CHARSET, port=PORT,
                          use_unicode=True)
     cursor = db.cursor()
-    sql = "SELECT `id`,`name` FROM `grid`.`vendor` WHERE `name` = '%s'" % (vendor);
-    num = cursor.execute(sql);
-    if (num == 0):
-        resu = {'state': 1, 'message': '找不到供应商，请重新输入或者注册'}
-        return jsonify(resu)
 
-    vendor_id = cursor.fetchall()[0][0]
+
     sn = ''.join(random.sample(string.ascii_letters + string.digits, 24)).upper()
-
-    sql = "SELECT `id`,`name` FROM `grid`.`charging-module` WHERE `name` = '%s'" % (moudle);
-    num = cursor.execute(sql);
-    if (num == 0):
-        resu = {'state': 1, 'message': '找不到供应商，请重新输入或者注册'}
-        return jsonify(resu)
-
-    module_id = cursor.fetchall()[0][0]
-
-    if (module_id==0):
-        expire_date = time.strftime("%Y-%m-%d %H:%M:%S", time.strptime("2050-01-01", "%Y-%m-%d"))
     expire_date = time.strftime("%Y-%m-%d %H:%M:%S", time.strptime("2050-01-01", "%Y-%m-%d"))
     create_date =time.strftime("%Y-%m-%d %H:%M:%S", time.localtime());
     sql = "INSERT INTO `grid`.`serial-number` (`sn`, `vendor_id`, `module_id`, `effect_months`,`create_date` ) VALUES ('%s', %s, %s, '%s','%s')" % (
@@ -102,7 +113,7 @@ def GeneraSNCode():
     print(sn)
     pattern = re.compile('.{6}')
     sn = '-'.join(pattern.findall(sn))
-    # smtpdemo.receivers =["114803203@qq.com"]
+
     resu = {'state': 0, 'message': '', 'sn': sn}
     return jsonify(resu)
 

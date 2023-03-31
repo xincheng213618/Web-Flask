@@ -18,6 +18,7 @@ class GridVendor(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True, comment='用户编号')
     name = db.Column(db.String(255), comment='name')
     address = db.Column(db.String(255), comment='address')
+    region_id = db.Column(db.Integer, comment='region_id')
     contact_number = db.Column(db.String(15), comment='contact_number')
     create_date = db.Column(db.DateTime, default=datetime.datetime.now, comment='创建时间')
 
@@ -37,8 +38,8 @@ class Gridmodule(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True, comment='用户编号')
     name = db.Column(db.String(30), comment='name')
     code = db.Column(db.Integer, comment='code')
-    download_address = db.Column(db.Integer, comment='download_address')
-    renewal_type =db.Column(db.DateTime, comment='renewal_type')
+    download_address = db.Column(db.String(30), comment='download_address')
+    renewal_type =db.Column(db.Integer, comment='renewal_type')
     create_date = db.Column(db.DateTime, default=datetime.datetime.now, comment='创建时间')
 
 class Gridorder(db.Model):
@@ -50,3 +51,11 @@ class Gridorder(db.Model):
     effect_date = db.Column(db.DateTime, comment='effect_date')
     expire_date = db.Column(db.DateTime, comment='expire_date')
     create_date = db.Column(db.DateTime, default=datetime.datetime.now, comment='创建时间')
+
+
+class Gridregion(db.Model):
+    __tablename__ = 'region'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True, comment='用户编号')
+    name = db.Column(db.String(30), comment='name')
+    region_id = db.Column(db.Integer, comment='region_id')
+

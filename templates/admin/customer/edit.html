@@ -79,7 +79,7 @@
       roleIds = roleIds.substr(0, roleIds.length - 1)
       data.field.roleIds = roleIds
       $.ajax({
-        url: '/admin/customer/update',
+        url: '/customer/update',
         data: JSON.stringify(data.field),
         dataType: 'json',
         contentType: 'application/json',

@@ -74,6 +74,9 @@ def edit(id):
     item = curd.get_one_by_id(GridSn, id)
     return render_template('admin/serial/edit.html',serial = item)
 
+
+
+
 @serial.get('/info/<int:id>')
 @authorize("admin:serial:main")
 def info(id):

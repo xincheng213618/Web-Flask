@@ -65,16 +65,13 @@
 
 {# 用户修改操作 #}
 <script type="text/html" id="vendor-bar">
-    {% if authorize("admin:vendor:add") %}
-        <button class="pear-btn pear-btn-primary pear-btn-md" lay-event="add">
-            <i class="pear-icon pear-icon-add"></i>
-            新增
+    {% if authorize("admin:vendor:edit") %}
+        <button class="pear-btn pear-btn-primary pear-btn-sm" lay-event="edit"><i class="pear-icon pear-icon-edit"></i>
         </button>
     {% endif %}
     {% if authorize("admin:vendor:remove") %}
-        <button class="pear-btn pear-btn-md" lay-event="batchRemove">
-            <i class="pear-icon pear-icon-ashbin"></i>
-            删除
+        <button class="pear-btn pear-btn-danger pear-btn-sm" lay-event="remove"><i
+                class="pear-icon pear-icon-ashbin"></i>
         </button>
     {% endif %}
 </script>
@@ -106,10 +103,11 @@
                 {% if authorize("admin:vendor:remove") %}
                     {type: 'checkbox'},
                 {% endif %}
-                {title: 'ID', field: 'id', align: 'center',width:20 ,sort:true},
-                {title: '名称', field: 'name', align: 'center',sort:true },
-                {title: '地址', field: 'address', align: 'center',sort:true},
-                {title: '联系方式', field: 'contact_number', align: 'center',sort:true},
+                {title: 'ID', field: 'id', align: 'center', width: 20, sort: true},
+                {title: '名称', field: 'name', align: 'center', sort: true},
+                {title: '区域', field: 'region', align: 'center', sort: true},
+                {title: '地址', field: 'address', align: 'center', sort: true},
+                {title: '联系方式', field: 'contact_number', align: 'center', sort: true},
                 {% if authorize("admin:vendor:edit") %}
                     {title: '操作', toolbar: '#vendor-bar', align: 'center', width: 130}
                 {% endif %}
@@ -134,7 +132,7 @@
                 type: 2,
                 title: '信息',
                 shade: 0.1,
-                area: ['750px', '600px'],
+                area: ['1000px', '700px'],
                 content: MODULE_PATH + 'info/' + obj.data['id'],
                 end: function () {
                     table.reload('vendor-table')

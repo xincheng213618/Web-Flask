@@ -17,6 +17,16 @@
                     </div>
                 </div>
                 <div class="layui-form-item">
+                    <label class="layui-form-label">销售区域</label>
+                    <div class="layui-input-block">
+                        <select id="citySelect" name="region_id" lay-verify="">
+                            <option value="">请选择一个城市</option>
+                        </select>
+                    </div>
+                </div>
+
+
+                <div class="layui-form-item">
                     <label class="layui-form-label">地址</label>
                     <div class="layui-input-block">
                         <input type="text" name="address" lay-verify="title" autocomplete="off" placeholder="请输入标题"
@@ -26,7 +36,8 @@
                 <div class="layui-form-item">
                     <label class="layui-form-label">联系方式</label>
                     <div class="layui-input-block">
-                        <input type="text" name="contact_number" lay-verify="title" autocomplete="off" placeholder="请输入标题"
+                        <input type="text" name="contact_number" lay-verify="title" autocomplete="off"
+                               placeholder="请输入标题"
                                class="layui-input">
                     </div>
                 </div>
@@ -49,31 +60,47 @@
 </form>
 {% include 'admin/common/footer.html' %}
 <script>
-  layui.use(['form', 'jquery'], function () {
-    let form = layui.form
-    let $ = layui.jquery
-    form.on('submit(vendor-save)', function (data) {
+    layui.use(['form', 'jquery'], function () {
+        var dropdown = layui.dropdown
+        let form = layui.form
+        let $ = layui.jquery
 
-      $.ajax({
-        url: '/vendor/save',
-        data: JSON.stringify(data.field),
-        dataType: 'json',
-        contentType: 'application/json',
-        type: 'post',
-        success: function (result) {
-          if (result.success) {
-            layer.msg(result.msg, { icon: 1, time: 1000 }, function () {
-              parent.layer.close(parent.layer.getFrameIndex(window.name))//关闭当前页
-              parent.layui.table.reload('user-table')
-            })
-          } else {
-            layer.msg(result.msg, { icon: 2, time: 1000 })
-          }
+
+        var regions = {{regions|tojson }};
+        region_id = 0;
+
+        var select = document.getElementById('citySelect');
+        for (var i = 0; i < regions.length; i++) {
+            var option = document.createElement("option");
+            option.setAttribute("value", regions[i].id);
+            option.innerText = regions[i].title;
+            select.appendChild(option)
         }
-      })
-      return false
+        form.render("select");
+
+        form.on('submit(vendor-save)', function (data) {
+            data = JSON.stringify(data.field);
+            data['region_id'] = region_id
+            $.ajax({
+                url: '/vendor/save',
+                data: data,
+                dataType: 'json',
+                contentType: 'application/json',
+                type: 'post',
+                success: function (result) {
+                    if (result.success) {
+                        layer.msg(result.msg, {icon: 1, time: 1000}, function () {
+                            parent.layer.close(parent.layer.getFrameIndex(window.name))//关闭当前页
+                            parent.layui.table.reload('user-table')
+                        })
+                    } else {
+                        layer.msg(result.msg, {icon: 2, time: 1000})
+                    }
+                }
+            })
+            return false
+        })
     })
-  })
 </script>
 <script>
 </script>

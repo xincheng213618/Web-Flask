@@ -12,8 +12,6 @@ CHARSET = 'utf8'
 
 # 创建一个服务，把当前这个python文件当做一个服务
 app = flask.Flask(__name__)
-
-
 @app.route('/register', methods=['post'])
 def register():
     user_id = 1
@@ -53,6 +51,8 @@ def register():
         if not email_address:
             resu = {'state': 1, 'message': '联系电话为空'}
             return jsonify(resu)
+
+
         try:
             db = pymysql.connect(host=HOST, user=USER, passwd=PASSWD, db=DB, charset=CHARSET, port=PORT,
                                  use_unicode=True)

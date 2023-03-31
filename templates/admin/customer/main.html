@@ -72,10 +72,12 @@
     {% if authorize("admin:customer:edit") %}
         <button class="pear-btn pear-btn-primary pear-btn-sm" lay-event="edit"><i class="pear-icon pear-icon-edit"></i>
         </button>
+        {% endif %}
+        {% if authorize("admin:customer:remove") %}
         <button class="pear-btn pear-btn-danger pear-btn-sm" lay-event="remove"><i
                 class="pear-icon pear-icon-ashbin"></i>
         </button>
-    {% endif %}
+        {% endif %}
 </script>
 
 {# 用户注册时间 #}
@@ -131,20 +133,21 @@
             defaultToolbar: [{layEvent: 'refresh', icon: 'layui-icon-refresh'}, 'filter', 'print', 'exports'] /*默认工具栏*/
 
         })
-        table.on('rowDouble(customer-table)', function (obj) {
+        {% if authorize("admin:customer:edit") %}
+            table.on('rowDouble(customer-table)', function (obj) {
+                layer.open({
+                    type: 2,
+                    title: '信息',
+                    shade: 0.1,
+                    area: ['800px', '700px'],
+                    content: MODULE_PATH + 'info/' + obj.data['id'],
+                    end: function () {
+                        table.reload('customer-table')
+                    }
+                })
+            });
+        {% endif %}
 
-                        layer.open({
-                type: 2,
-                title: '信息',
-                shade: 0.1,
-                area: ['550px', '500px'],
-                content: MODULE_PATH + 'info/' + obj.data['id'],
-                end: function () {
-                    table.reload('customer-table')
-                }
-            })
-
-        });
 
 
         form.on('submit(customer-query)', function (data) {

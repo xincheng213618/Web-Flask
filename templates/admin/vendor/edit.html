@@ -13,21 +13,29 @@
                 <div class="layui-form-item layui-hide">
                     <label class="layui-form-label">编号</label>
                     <div class="layui-input-block">
-                        <input type="text" value="{{ vendor.id }}" name="userId" lay-verify="title"
+                        <input type="text" value="{{ vendor.id }}" name="id" lay-verify="title"
                                autocomplete="off" placeholder="请输入标题" class="layui-input">
                     </div>
                 </div>
                 <div class="layui-form-item">
                     <label class="layui-form-label">姓名</label>
                     <div class="layui-input-block">
-                        <input type="text" value="{{ vendor.name }}" name="username" lay-verify="title"
+                        <input type="text" value="{{ vendor.name }}" name="name" lay-verify="title"
                                autocomplete="off" placeholder="请输入姓名" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">销售区域</label>
+                    <div class="layui-input-block">
+                        <select id="citySelect" name="region_id"  lay-verify="">
+                            <option value="">请选择一个城市</option>
+                        </select>
                     </div>
                 </div>
                 <div class="layui-form-item">
                     <label class="layui-form-label">公司地址</label>
                     <div class="layui-input-block">
-                        <input type="text" value="{{ vendor.address }}" name="realName" lay-verify="title"
+                        <input type="text" value="{{ vendor.address }}" name="address" lay-verify="title"
                                autocomplete="off" placeholder="请输入地址"
                                class="layui-input">
                     </div>
@@ -35,7 +43,7 @@
                 <div class="layui-form-item">
                     <label class="layui-form-label">联系方式</label>
                     <div class="layui-input-block">
-                        <input type="text" value="{{ vendor.contact_number }}" name="realName" lay-verify="title"
+                        <input type="text" value="{{ vendor.contact_number }}" name="contact_number" lay-verify="title"
                                autocomplete="off" placeholder="请输入联系方式"
                                class="layui-input">
                     </div>
@@ -64,6 +72,22 @@
         let $ = layui.jquery
         let dtree = layui.dtree
 
+
+        var regions = {{regions|tojson }};
+        region_id = 0;
+
+        var select = document.getElementById('citySelect');
+        for (var i = 0; i < regions.length; i++) {
+            var option = document.createElement("option");
+            if (regions[i].id =={{vendor.region_id}}) {
+                option.selected = "selected"
+            }
+            option.setAttribute("value", regions[i].id);
+            option.innerText = regions[i].title;
+            select.appendChild(option)
+        }
+        form.render("select");
+
         form.on('submit(vendor-update)', function (data) {
             let roleIds = ''
             $('input[type=checkbox]:checked').each(function () {
@@ -72,7 +96,7 @@
             roleIds = roleIds.substr(0, roleIds.length - 1)
             data.field.roleIds = roleIds
             $.ajax({
-                url: '/admin/vendor/update',
+                url: '/vendor/update',
                 data: JSON.stringify(data.field),
                 dataType: 'json',
                 contentType: 'application/json',

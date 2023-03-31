@@ -1,7 +1,7 @@
 from flask import Blueprint, request, render_template,jsonify,escape
 
 
-from applications.models import GridUser,RegisterInfo,Gridorder
+from applications.models import GridUser,RegisterInfo,Gridorder,GridSn
 from flask import Blueprint, render_template, request, current_app
 from flask_login import current_user
 from flask_mail import Message
@@ -29,40 +29,19 @@ def main():
 def data():
     # 获取请求参数
     name =str_escape(request.args.get("customer_name", type=str))
-    legal_address =str_escape(request.args.get("legal_address", type=str))
-    email_address =str_escape(request.args.get("email_address", type=str))
-    contact_number=str_escape(request.args.get("contact_number", type=str))
-    user_class =str_escape(request.args.get("user_class", type=int))
-
     mf = ModelFilter()
     if name:
         mf.contains(field_name="name", value=name)
-    if legal_address:
-        mf.contains(field_name="legal_address", value=legal_address)
-    if email_address:
-        mf.contains(field_name="email_address", value=email_address)
-    if contact_number:
-        mf.contains(field_name="contact_number", value=contact_number)
-    if user_class:
-        mf.exact(field_name="user_class", value=user_class)
-    # orm查询
-    # 使用分页获取data需要.items
-    query = GridUser.query.filter(mf.get_filter(GridUser)).layui_paginate()
-    count = query.total
-    # "普通用户" if i[5] == 0 else "高级用户" if i[5] == 1 else "钻石用户"
+
+    query = Gridorder.query.filter(mf.get_filter(Gridorder)).layui_paginate()
     return table_api(
         data=[{
-            'id': user.id,
-            'name': user.name,
-            'legal_address': user.legal_address,
-            'email_address': user.email_address,
-            'contact_number': user.contact_number,
-            'user_class': "普通用户" if user.user_class  == 0 else "高级用户" if user.user_class == 1 else "钻石用户",
-            'create_date': user.create_date,
-        } for user in query],
+            'id': item.id,
+            'user': curd.get_one_by_id(GridUser, item.user_id).name,
+            'serial': curd.get_one_by_id(GridSn, item.serial_id).sn,
+            'create_date': item.create_date,
+        } for item in query],
         count=query.total)
-    # 返回api
-    return table_api(data=model_to_dicts(schema=GridUserOutSchema, data=mail.items), count=count)
 
 
 @order.get('/add')

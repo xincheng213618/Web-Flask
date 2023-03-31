@@ -77,6 +77,7 @@ def save():
     return success_api(msg="增加成功")
 
 
+
 @customer.get('/edit/<int:id>')
 @authorize("admin:customer:edit", log=True)
 def edit(id):
@@ -100,6 +101,8 @@ def update():
     return success_api(msg="更新权限成功")
 
 
+
+
 @customer.get('/info/<int:id>')
 @authorize("admin:customer:main")
 def info(id):
@@ -110,7 +113,6 @@ def info(id):
     customer['legal_address'] = gridUser.legal_address
     customer['email_address'] = gridUser.email_address
     customer['contact_number'] = gridUser.contact_number
-
     mf = ModelFilter()
     mf.exact('user_id',gridUser.id)
 
