@@ -335,9 +335,11 @@ from flask import Flask, render_template, request, redirect
 def root():
     return redirect("/admin", code=302)
 
-from applications import create_app
+
 from webinterface import *
+from applications import create_app
 if __name__ == '__main__':
     app.config['MAX_CONTENT_LENGTH'] = 160 * 1000 * 1000
+    app.config['UPLOAD_FOLDER'] ="UPLOAD"
     create_app(app)
     app.run(debug=True, port=18888, host='0.0.0.0', ssl_context=('v3.xincheng213618.com_bundle.crt', 'v3.xincheng213618.com.key'));

@@ -2,7 +2,7 @@ from main import *
 import pymysql
 import time
 
-from flask import Blueprint, request, render_template, jsonify, escape
+from flask import Blueprint, request, render_template, jsonify, escape, send_from_directory
 from applications.models import GridUser, RegisterInfo, GridVendor, Gridregion, GridSn,Gridmodule,Gridorder
 from flask import Blueprint, render_template, request, current_app,redirect
 from flask_login import current_user
@@ -147,4 +147,6 @@ def addSNCode():
     except Exception:
         resu = {'state': 1, 'message': "数据库连接失败"}
     return jsonify(resu)  # 将字典转换为json串, json是字符串
+
+
 

@@ -70,6 +70,7 @@ def add(receiver, subject, content, user_id):
     return True
 
 
+
 def delete(id):
     """
     删除邮件记录，立刻写入数据库。
@@ -83,7 +84,7 @@ def delete(id):
     db.session.commit()
     return True
 
-def send_mail(subject, recipients, content):
+def send_mail(recipients,subject, content):
     """原发送邮件函数，不会记录邮件发送记录
 
     失败报错，请注意使用 try 拦截。
@@ -93,4 +94,7 @@ def send_mail(subject, recipients, content):
     :param content: 邮件 html
     """
     message = Message(subject=subject, recipients=recipients, html=content)
+    mail.send(message)
+
+def send_mail(message):
     mail.send(message)

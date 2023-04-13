@@ -19,7 +19,7 @@
             </div>
             <div class="layui-form-item">
                 <label class="layui-form-label">姓名</label>
-                <label  class="layui-form-label-col">{{ vendor.name }}</label>
+                <label class="layui-form-label-col">{{ vendor.name }}</label>
             </div>
             <div class="layui-form-item">
                 <label class="layui-form-label">公司地址</label>
@@ -30,14 +30,12 @@
                 <label class="layui-form-label-col">{{ vendor.contact_number }}</label>
             </div>
             <div class="layui-form-item">
-                <label class="layui-form-label">开关-默认关</label>
                 <div class="layui-input-block">
-                    <input type="checkbox" checked="" name="open" lay-skin="switch" lay-filter="switchTest"
-                           lay-text="ON|OFF">
+                    <button type="button" id="downbutton" class="layui-btn layui-btn-primary" lay-on="get-vercode">下载报表</button>
+{#                    <a href="/download" download>Download PDF</a>#}
+
                 </div>
             </div>
-
-
 
         </div>
         <div class="layui-panel">
@@ -52,18 +50,26 @@
 
 {% include 'admin/common/footer.html' %}
 <script>
-    layui.use(['table', 'form', 'jquery', 'element', 'util'], function () {
-        let form = layui.form
-        let $ = layui.jquery
-        let dtree = layui.dtree
+    layui.use(['layer','table', 'form', 'jquery', 'element', 'util'], function () {
+          var layer = layui.layer
+        var form = layui.form;
+        let $ = layui.jquery;
+        let dtree = layui.dtree;
         var table = layui.table;
-        //指定开关事件
-        form.on('switch(switchTest)', function (data) {
-            layer.msg('开关checked：' + (this.checked ? 'true' : 'false'), {
-                offset: '6px'
-            });
-            layer.tips('温馨提示：请注意开关状态的文字可以随意定义，而不仅仅是ON|OFF', data.othis)
+
+        $(document).on('click', "#downbutton", function () {
+            window.open('/vendor/downloadreport?id=' +{{ vendor.id }});
+            {#const a = document.createElement('a');#}
+            {#a.style.display = 'none';#}
+            {#a.href = '/download';#}
+            {#a.download ="统计数据.pdf";#}
+            {#document.body.appendChild(a);#}
+            {#a.click();#}
+            {#document.body.removeChild(a);#}
+
+
         });
+
 
         let cols = [
             [
@@ -87,11 +93,9 @@
             defaultToolbar: [{layEvent: 'refresh', icon: 'layui-icon-refresh'}, 'filter', 'print', 'exports'] /*默认工具栏*/
         })
 
-        form.on('submit(vendor-update)', function (data) {
-            parent.layer.close(parent.layer.getFrameIndex(window.name))//关闭当前页
 
-            return false
-        })
+
+
     })
 </script>
 </body>

@@ -5,6 +5,7 @@ from applications.view import init_view
 from applications.common.script import init_script
 from applications.extensions import db
 from applications.configs import config
+
 def create_app(app,config_name=None):
 
     if not config_name:

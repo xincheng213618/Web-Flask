@@ -88,7 +88,7 @@
 
 {% include 'admin/common/footer.html' %}
 <script>
-    layui.use(['table', 'form', 'jquery', 'element', 'util'], function () {
+    layui.use(['table', 'form', 'jquery', 'element', 'util','common'], function () {
         let table = layui.table
         let form = layui.form
         let $ = layui.jquery
@@ -96,6 +96,7 @@
         let popup = layui.popup
         let common = layui.common
         let element =layui.element
+
 
         let MODULE_PATH = '/vendor/'
         let cols = [

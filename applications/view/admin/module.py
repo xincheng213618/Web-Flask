@@ -95,7 +95,7 @@ def info(id):
     module['code'] = module.code
     module['download_address'] = module.download_address
     module['renewal_type'] = module.renewal_type
-    module['create_date'] = module.create_date
+    module['create_date'] = module.create_date.strftime( '%Y-%m-%d %H:%M:%S')
 
     mf = ModelFilter()
     mf.exact('user_id',module.id)

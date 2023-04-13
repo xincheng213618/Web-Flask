@@ -1,5 +1,5 @@
 
-from applications.models import GridUser,RegisterInfo
+from applications.models import GridUser,RegisterInfo,GridVendor,Gridmodule
 from flask import Blueprint, render_template, request, current_app
 from flask_login import current_user
 from flask_mail import Message
@@ -101,8 +101,7 @@ def update():
     return success_api(msg="更新权限成功")
 
 
-
-
+import re
 @customer.get('/info/<int:id>')
 @authorize("admin:customer:main")
 def info(id):
@@ -116,9 +115,21 @@ def info(id):
     mf = ModelFilter()
     mf.exact('user_id',gridUser.id)
 
-    res =RegisterInfo.query.filter_by(user_id=gridUser.id).all()
+    query =RegisterInfo.query.filter_by(user_id=gridUser.id).all()
 
-    customer['sninfo'] =model_to_dicts(schema=RegisterInfoOutSchema, data=res)
+
+
+    pattern = re.compile('.{6}')
+    pattern1 = re.compile('.{2}')
+
+    customer['sninfo'] = [{
+            'id': item.id,
+            'sn': '-'.join(pattern.findall(item.sn)),
+            'mac': '-'.join(re.compile('.{2}').findall(item.mac_address)),
+            'create_date': item.create_date.strftime( '%Y-%m-%d %H:%M:%S'),
+        } for item in query]
+
+
     return render_template('admin/customer/info.html',customer = customer)
 
 # 删除用户

@@ -27,7 +27,7 @@ SECRET_KEY = 'xincheng'
 # 邮箱配置
 MAIL_SERVER = smtp.qq.com
 MAIL_USERNAME = 1791746286@qq.com
-MAIL_PASSWORD = dbabotmbvdwxdbdf
+MAIL_PASSWORD = dftciblcjjvufdaj
 
 # 插件配置
 PLUGIN_ENABLE_FOLDERS = []

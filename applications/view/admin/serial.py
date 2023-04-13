@@ -45,12 +45,15 @@ def data():
         data=[{
             'id': item.id,
             'sn': item.sn,
-            'vendor': curd.get_one_by_id(GridVendor, item.vendor_id).name,
+            'vendor': (lambda x: "已删除" if x is None else x.name)(curd.get_one_by_id(GridVendor, item.vendor_id)),
             'moudle': curd.get_one_by_id(Gridmodule, item.module_id).name,
             'effect_months': item.effect_months,
-            'create_date': item.create_date,
+            'create_date': item.create_date.strftime( '%Y-%m-%d %H:%M:%S'),
         } for item in query],
         count=query.total)
+
+
+
 
 @serial.get('/add')
 @authorize("admin:serial:add")

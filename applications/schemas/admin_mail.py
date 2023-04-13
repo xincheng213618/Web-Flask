@@ -14,6 +14,6 @@ class MailOutSchema(ma.Schema):
 
     def get_realname(self, obj):
         if obj.user_id != None:
-            return User.query.filter_by(id=obj.user_id).first().realname
+            return (lambda x: "找不到" if x is None else x.realname)(User.query.filter_by(id=obj.user_id).first())
         else:
             return None
