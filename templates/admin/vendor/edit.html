@@ -72,9 +72,7 @@
         let $ = layui.jquery
         let dtree = layui.dtree
 
-
         var regions = {{regions|tojson }};
-        region_id = 0;
 
         var select = document.getElementById('citySelect');
         for (var i = 0; i < regions.length; i++) {
@@ -86,6 +84,7 @@
             option.innerText = regions[i].title;
             select.appendChild(option)
         }
+
         form.render("select");
 
         form.on('submit(vendor-update)', function (data) {

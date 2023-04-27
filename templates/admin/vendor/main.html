@@ -133,7 +133,7 @@
                 type: 2,
                 title: '信息',
                 shade: 0.1,
-                area: ['1000px', '700px'],
+                area: ['1000px', '760px'],
                 content: MODULE_PATH + 'info/' + obj.data['id'],
                 end: function () {
                     table.reload('vendor-table')
@@ -233,7 +233,6 @@
         }
 
         window.batchRemove = function (obj) {
-
             let data = table.checkStatus('vendor-table').data
             if (data.length === 0) {
                 layer.msg('未选中数据', {

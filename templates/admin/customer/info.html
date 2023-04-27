@@ -8,7 +8,7 @@
 <body>
 
 
-<div class="layui-bg-gray" style="padding: 30px;">
+<div class="layui-bg-gray" style="padding: 10px 15px;">
     <div class="layui-row layui-col-space15">
         <div class="layui-panel">
             <div class="layui-form-item layui-hide">
@@ -17,30 +17,19 @@
                     <label>{{ customer.id }}</label>
                 </div>
             </div>
-            <div class="layui-form-item">
+            <div class="layui-row">
                 <label class="layui-form-label">姓名</label>
-                <label  class="layui-form-label-col">{{ customer.name }}</label>
-            </div>
-            <div class="layui-form-item">
+                <label class="layui-form-label-col">{{ customer.name }}</label>
                 <label class="layui-form-label">地址</label>
                 <label class="layui-form-label-col">{{ customer.legal_address }}</label>
-            </div>
-            <div class="layui-form-item">
                 <label class="layui-form-label">邮件地址</label>
-                <label class="layui-form-label-col">{{  customer.email_address }}</label>
-            </div>
-            <div class="layui-form-item">
+                <label class="layui-form-label-col">{{ customer.email_address }}</label>
                 <label class="layui-form-label">手机</label>
                 <label class="layui-form-label-col">{{ customer.contact_number }}</label>
             </div>
+            <table id="customer-info-table" lay-filter="customer-info-table"></table>
         </div>
-        <div class="layui-panel">
-            <div class="layui-card">
-                <div class="layui-card-body">
-                    <table id="customer-info-table" lay-filter="customer-info-table"></table>
-                </div>
-            </div>
-        </div>
+
     </div>
 </div>
 
@@ -53,16 +42,16 @@
         var table = layui.table;
         let cols = [
             [
-                {title: '序列号', field: 'sn', align: 'left' ,width:"250"},
-                {title: 'mac地址', field: 'mac', align: 'left',width:"150"},
-                {title: '创建日期', field: 'create_date', align: 'left',width:"250"},
+                {title: '序列号', field: 'sn', align: 'left', width: "300"},
+                {title: 'mac地址', field: 'mac', align: 'left', width: "250"},
+                {title: '创建日期', field: 'create_date', align: 'left', width: "250"},
             ]
         ]
         var sninfo = {{ customer.sninfo|tojson }};
         table.render({
             elem: '#customer-info-table',
             data: sninfo,
-            page: false,
+            page: true,
             count: 50,
             curr: 2,
             cols: cols,

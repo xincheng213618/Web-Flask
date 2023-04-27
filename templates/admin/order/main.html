@@ -38,12 +38,13 @@
 </div>
 </body>
 
+<script type="text/html" id="order-toolbar">
 
+</script>
 
 {# 用户修改操作 #}
 <script type="text/html" id="order-bar">
-    <button class="pear-btn pear-btn-primary pear-btn-sm" lay-event="edit"><i class="pear-icon pear-icon-edit"></i>
-    </button>
+
     <button class="pear-btn pear-btn-danger pear-btn-sm" lay-event="remove"><i
             class="pear-icon pear-icon-ashbin"></i>
     </button>
@@ -72,13 +73,12 @@
         let MODULE_PATH = '/order/'
         let cols = [
             [
-                {% if authorize("admin:order:remove") %}
-                    {type: 'checkbox'},
-                {% endif %}
                 {title: 'ID', field: 'id', align: 'center',width:20,sort:true},
+                {title: '代理商', field: 'vendor', align: 'center',sort:true },
+                {title: '序列号', field: 'serial', align: 'center',sort:true },
+                {title: '价格', field: 'payment', align: 'center',sort:true },
                 {title: '客户', field: 'user', align: 'center',sort:true },
-                {title: '客户', field: 'serial', align: 'center',sort:true },
-                {title: '操作', toolbar: '#order-bar', align: 'center', width: 130}
+                {title: '创建日期', field: 'create_date', align: 'center',sort:true },
             ]
         ]
 
@@ -90,7 +90,7 @@
             curr:2,
             cols: cols,
             skin: 'line',
-            {#toolbar: '#order-toolbar', /*工具栏*/#}
+            toolbar: '#order-toolbar', /*工具栏*/
             text: {none: '暂无订单信息'},
             defaultToolbar: [{layEvent: 'refresh', icon: 'layui-icon-refresh'}, 'filter', 'print', 'exports'] /*默认工具栏*/
 
@@ -177,7 +177,7 @@
 
         }
         window.remove = function (obj) {
-            layer.confirm('确定要删除该用户', {icon: 3, title: '提示'}, function (index) {
+            layer.confirm('确定要删除该记录', {icon: 3, title: '提示'}, function (index) {
                 layer.close(index)
                 let loading = layer.load()
                 $.ajax({
@@ -202,7 +202,7 @@
 
         window.batchRemove = function (obj) {
 
-            let data = table.checkStatus(obj.config.id).data
+            let data = table.checkStatus('order-table').data
             if (data.length === 0) {
                 layer.msg('未选中数据', {
                     icon: 3,
@@ -211,7 +211,7 @@
                 return false
             }
             var ids = []
-            var hasCheck = table.checkStatus('user-table')
+            var hasCheck = table.checkStatus('order-table')
             var hasCheckData = hasCheck.data
             if (hasCheckData.length > 0) {
                 $.each(hasCheckData, function (index, element) {
@@ -234,9 +234,7 @@
                     success: function (result) {
                         layer.close(loading)
                         if (result.success) {
-                            popup.success(result.msg, function () {
                                 table.reload('order-table')
-                            })
                         } else {
                             popup.failure(result.msg)
                         }

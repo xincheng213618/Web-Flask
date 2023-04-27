@@ -31,13 +31,14 @@ def data():
     mf = ModelFilter()
     if sn:
         sn= sn.strip().replace("-", "")
-        mf.contains(field_name="name", value=sn)
+        mf.contains(field_name="sn", value=sn)
     if module_name:
         mf.contains(field_name="module_name", value=module_name)
     if vendor_name:
         mf.contains(field_name="module_name", value=vendor_name)
     # orm查询
     # 使用分页获取data需要.items
+
     query = GridSn.query.filter(mf.get_filter(GridSn)).layui_paginate()
     count = query.total
     # "普通用户" if i[5] == 0 else "高级用户" if i[5] == 1 else "钻石用户"

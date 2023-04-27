@@ -1,7 +1,7 @@
 from flask import Blueprint, request, render_template,jsonify,escape
 
 
-from applications.models import GridUser,RegisterInfo,Gridorder,GridSn
+from applications.models import GridUser,RegisterInfo,Gridorder,GridSn,Gridregion,GridVendor
 from flask import Blueprint, render_template, request, current_app
 from flask_login import current_user
 from flask_mail import Message
@@ -37,37 +37,13 @@ def data():
     return table_api(
         data=[{
             'id': item.id,
-            'user': curd.get_one_by_id(GridUser, item.user_id).name,
-            'serial': curd.get_one_by_id(GridSn, item.serial_id).sn,
-            'create_date': item.create_date,
+            'vendor': (lambda x: "无" if x is None else x.name)(curd.get_one_by_id(GridVendor, item.user_id)),
+            'user': "未使用",
+            'serial':(lambda x: "无" if x is None else x.sn)(curd.get_one_by_id(GridSn, item.serial_id)),
+            'payment':str(item.payment) +"￥",
+            'create_date': item.create_date.strftime( '%Y-%m-%d %H:%M:%S'),
         } for item in query],
         count=query.total)
-
-
-@order.get('/add')
-@authorize("admin:order:add")
-def add():
-    return render_template('admin/order/add.html')
-@order.post('/save')
-@authorize("admin:order:add")
-def save():
-    req_json = request.json
-    user_id = str_escape(req_json.get("user_id"))
-    serial_id = str_escape(req_json.get('serial_id'))
-    payment = str_escape(req_json.get('payment'))
-    effect_date = str_escape(req_json.get('effect_date'))
-    expire_date = str_escape(req_json.get('expire_date'))
-
-    item = Gridorder(user_id=user_id, serial_id=serial_id, payment=payment,effect_date =effect_date,expire_date =expire_date)
-    db.session.add(item)
-    db.session.commit()
-    return success_api(msg="增加成功")
-
-@order.get('/edit/<int:id>')
-@authorize("admin:order:edit")
-def edit(id):
-    item = curd.get_one_by_id(Gridorder, id)
-    return render_template('admin/module/edit.html',order = item)
 
 
 

@@ -1,5 +1,5 @@
 import flask
-from flask import Blueprint, request, render_template,jsonify,escape
+from flask import Blueprint, request, render_template,jsonify
 import re,pymysql,json
 import time
 
@@ -223,36 +223,15 @@ def checkSN(sn):
 
 
 def checkMac(mac):
-    print(mac)
     mac = mac.strip().replace("-", "").replace(":", "").replace(".", "")
-    if re.match(r"^\s*([0-9a-fA-F]{2,2}){5,5}[0-9a-fA-F]{2,2}\s*$", mac): return True
-    return False
+    return re.match(r"^\s*([0-9a-fA-F]{2,2}){5,5}[0-9a-fA-F]{2,2}\s*$", mac)
 
-
-@app.route('/generateSNCode', methods=['post'])
-def generateSNCodepost():
-    sn = request.values.get('sn')
-    areaCode = request.values.get("areaCode")
-    distributorCode = request.values.get("distributorCode")
-    ValidityPeriod = request.values.get("validityPeriod")
-    EquipIdentify = request.values.get("equipIdentify")
-
-    if not sn or not areaCode or not distributorCode or not ValidityPeriod:
-        resu = {'state': 1, 'message': '参数不能存在空值'}
-        return jsonify(resu)
-    if not checkSN(sn):
-        resu = {'state': 1, 'message': '序列号参数异常'}
-        return jsonify(resu)
-
-    resu = {'state': 0, 'message': '序列号添加成功'}
-    return jsonify(resu)
 
 @app.route('/checkregister', methods=['post'])
 def checkregister():
     sn = request.values.get('sn')
-    print(sn)
     macstrings = request.values.get('mac-array')
-    print(macstrings)
+
     if not sn or not macstrings:
         resu = {'state': 1, 'message': '参数不能存在空值'}
         return jsonify(resu)
@@ -297,10 +276,6 @@ def checkregister():
         resu = {'state': 1, 'message': "数据库连接失败"}
     return jsonify(resu)  # 将字典转换为json串, json是字符串
 
-# @app.route('/js/<id>')
-# def js(id):
-#     return send_from_directory(os.path.join(app.root_path, 'static/js'), id, as_attachment=True)
-
 @app.route('/checkregisterdata', methods=['post'])
 def checkregisterdata():
     sn = request.values.get('sn')
@@ -316,30 +291,16 @@ def checkregisterdata():
         sql = "SELECT * FROM `grid`.`serial-number` WHERE `sn` = '%s'" % (sn)
         print(sql)
         aa = cursor.execute(sql)
-        print(aa)
         if (aa == 0):
             resu = {'state': 1, 'message': '找不到注册信息'}
             return jsonify(resu)  # 将字典转换为json串, json是字符
         else:
             res = cursor.fetchall()
-
-
             resu = {'state': 0, 'message': '0','sn':res[0][1],'effect_months': res[0][4]}
             return jsonify(resu)  # 将字典转换为json串, json是字符串
     except Exception:
         resu = {'state': 1, 'message': "数据库连接失败"}
     return jsonify(resu)  # 将字典转换为json串, json是字符串
 
-from flask import Flask, render_template, request, redirect
-@app.route('/', methods=['get'])
-def root():
-    return redirect("/admin", code=302)
 
 
-from webinterface import *
-from applications import create_app
-if __name__ == '__main__':
-    app.config['MAX_CONTENT_LENGTH'] = 160 * 1000 * 1000
-    app.config['UPLOAD_FOLDER'] ="UPLOAD"
-    create_app(app)
-    app.run(debug=True, port=18888, host='0.0.0.0', ssl_context=('v3.xincheng213618.com_bundle.crt', 'v3.xincheng213618.com.key'));

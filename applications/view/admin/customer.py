@@ -127,7 +127,7 @@ def info(id):
             'sn': '-'.join(pattern.findall(item.sn)),
             'mac': '-'.join(re.compile('.{2}').findall(item.mac_address)),
             'create_date': item.create_date.strftime( '%Y-%m-%d %H:%M:%S'),
-        } for item in query]
+        } for item in reversed(query)]
 
 
     return render_template('admin/customer/info.html',customer = customer)

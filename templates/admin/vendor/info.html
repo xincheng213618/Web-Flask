@@ -6,52 +6,57 @@
     {% include 'admin/common/header.html' %}
 </head>
 <body>
-
-
-<div class="layui-bg-gray" style="padding: 30px;">
-    <div class="layui-row layui-col-space15">
-        <div class="layui-panel">
-            <div class="layui-form-item layui-hide">
-                <label class="layui-form-label">编号</label>
-                <div class="layui-form-label-col">
-                    <label>{{ vendor.id }}</label>
-                </div>
-            </div>
-            <div class="layui-form-item">
+<div class="layui-panel">
+    <div class="layui-form-item layui-hide">
+        <label class="layui-form-label">编号</label>
+        <div class="layui-form-label-col">
+            <label>{{ vendor.id }}</label>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-row">
+            <div class="layui-col-md6">
                 <label class="layui-form-label">姓名</label>
                 <label class="layui-form-label-col">{{ vendor.name }}</label>
-            </div>
-            <div class="layui-form-item">
                 <label class="layui-form-label">公司地址</label>
                 <label class="layui-form-label-col">{{ vendor.address }}</label>
-            </div>
-            <div class="layui-form-item">
                 <label class="layui-form-label">联系方式</label>
                 <label class="layui-form-label-col">{{ vendor.contact_number }}</label>
             </div>
-            <div class="layui-form-item">
-                <div class="layui-input-block">
-                    <button type="button" id="downbutton" class="layui-btn layui-btn-primary" lay-on="get-vercode">下载报表</button>
-{#                    <a href="/download" download>Download PDF</a>#}
-
-                </div>
+            <div class="layui-col-md6">
+                <label class="layui-form-label">发放序列号</label>
+                <label class="layui-form-label-col">{{ vendor.sncount }}</label>
+                <label class="layui-form-label">已经激活</label>
+                <label class="layui-form-label-col">{{ vendor.snacvtivecount }}</label>
+                <label class="layui-form-label"></label>
             </div>
 
+
         </div>
+
+        {#            <div class="layui-form-item">#}
+        {#                <div class="layui-input-block">#}
+        {#                    <button type="button" id="downbutton" class="layui-btn layui-btn-primary" lay-on="get-vercode">下载报表</button>#}
+        {#                    <a href="/download" download>Download PDF</a>#}
+        {##}
+        {#                </div>#}
+        {#            </div>#}
+
+    </div>
+    <div class="layui-row layui-col-space15">
         <div class="layui-panel">
             <div class="layui-card">
                 <div class="layui-card-body">
-                    <table id="vendor-info-table" lay-filter="vendor-info-table"></table>
+                    <table id="vendor-info-table" lay-filter="vendor-info-table" style="padding: 30px;"></table>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
 {% include 'admin/common/footer.html' %}
 <script>
-    layui.use(['layer','table', 'form', 'jquery', 'element', 'util'], function () {
-          var layer = layui.layer
+    layui.use(['layer', 'table', 'form', 'jquery', 'element', 'util'], function () {
+        var layer = layui.layer
         var form = layui.form;
         let $ = layui.jquery;
         let dtree = layui.dtree;
@@ -73,7 +78,7 @@
 
         let cols = [
             [
-                {title: '序列号', field: 'sn', align: 'left', width: "250"},
+                {title: '序列号', field: 'sn', align: 'left', width: "270"},
                 {title: '模块', field: 'moudle', align: 'left', width: "140"},
                 {title: '有效期', field: 'effect_months', align: 'left', width: "200"},
                 {title: '创建日期', field: 'create_date', align: 'left', width: "250"},
@@ -83,7 +88,7 @@
         table.render({
             elem: '#vendor-info-table',
             data: sninfo,
-            page: false,
+            page: true,
             count: 50,
             curr: 2,
             cols: cols,
@@ -92,8 +97,6 @@
             text: {none: '暂无序列号信息'},
             defaultToolbar: [{layEvent: 'refresh', icon: 'layui-icon-refresh'}, 'filter', 'print', 'exports'] /*默认工具栏*/
         })
-
-
 
 
     })

@@ -27,7 +27,7 @@ class GridVendor(db.Model):
 class GridSn(db.Model):
     __tablename__ = 'serial-number'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True, comment='用户编号')
-    sn = db.Column(db.String(24), comment='name')
+    sn = db.Column(db.String(24), comment='sn')
     vendor_id = db.Column(db.Integer, comment='vendor_id')
     module_id = db.Column(db.Integer, comment='module_id')
     effect_months =db.Column(db.DateTime, comment='module_id')

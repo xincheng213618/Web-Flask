@@ -21,13 +21,13 @@ REDIS_HOST=127.0.0.1
 REDIS_PORT=6379
 
 # 密钥配置(记得改)
-SECRET_KEY = 'xincheng'
+SECRET_KEY = 'xincheng213'
 
 
 # 邮箱配置
 MAIL_SERVER = smtp.qq.com
 MAIL_USERNAME = 1791746286@qq.com
-MAIL_PASSWORD = dftciblcjjvufdaj
+MAIL_PASSWORD = ycxiyjmypqxjchjd
 
 # 插件配置
 PLUGIN_ENABLE_FOLDERS = []

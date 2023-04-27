@@ -130,14 +130,34 @@ def info(id):
             'moudle': curd.get_one_by_id(Gridmodule, item.module_id).name,
             'effect_months': item.effect_months.strftime( '%Y-%m-%d %H:%M:%S') ,
             'create_date': item.create_date.strftime( '%Y-%m-%d %H:%M:%S') ,
-        } for item in query]
+        } for item in reversed(query)]
 
+    vendor['sncount'] = len(query)
+
+
+    db = pymysql.connect(host=HOST, user=USER, passwd=PASSWD, db=DB, charset=CHARSET, port=PORT, use_unicode=True)
+    cursor = db.cursor()
+    sql = "SELECT `serial-number`.vendor_id, COUNT(DISTINCT `register-info`.sn) AS activated_sn_count FROM `serial-number` LEFT JOIN `register-info` ON `serial-number`.sn = `register-info`.sn WHERE `serial-number`.vendor_id ="+str(id)+" GROUP BY `serial-number`.vendor_id"
+    print(sql)
+    if (cursor.execute(sql)!=0):
+        rusult = cursor.fetchall()
+        snacvtivecount=rusult[0][1]
+    else:
+        snacvtivecount =0;
+    vendor['snacvtivecount']=snacvtivecount
     query = Gridregion.query.filter().all()
 
     regions = [{
         'id': item.id,
         'title': item.name,
     } for item in query]
+
+
+
+
+
+
+
     return render_template('admin/vendor/info.html', vendor=vendor,regions =regions)
 
 
@@ -188,9 +208,8 @@ from applications.extensions.init_apscheduler import scheduler
 from main import app
 from sqlalchemy import create_engine
 
-@scheduler.task('interval', id='11444445', seconds=30)
+@scheduler.task('interval', id='11444445', seconds=60*60*5)
 def Sendstatistics():
-    id =1
     with app.app_context():
         db = pymysql.connect(host=HOST, user=USER, passwd=PASSWD, db=DB, charset=CHARSET, port=PORT, use_unicode=True)
         cursor = db.cursor()

@@ -2,6 +2,11 @@ from flask_login import current_user,login_required
 
 from main import *
 from applications import create_app
+from webinterface import *
+from flask import redirect
+@app.route('/', methods=['get'])
+def root():
+    return redirect("/admin", code=302)
 
 if __name__ == '__main__':
     app.config['MAX_CONTENT_LENGTH'] = 160 * 1000 * 1000
